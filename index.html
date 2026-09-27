@@ -1,0 +1,1668 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Database Lagu PDPKK</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1f2f45">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Lagu PDPKK">
+<style>
+  :root{
+    --navy:#1f2f45;
+    --navy-dark:#152233;
+    --gold:#c9a227;
+    --gold-light:#e6c866;
+    --bg:#f4f3ee;
+    --card:#ffffff;
+    --text:#233;
+    --muted:#6b7280;
+    --border:#e2e0d8;
+    --danger:#b3392c;
+    --green:#2f7d4f;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html{color-scheme:light;}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    padding-bottom:60px;
+  }
+  header{
+    background:linear-gradient(135deg,var(--navy),var(--navy-dark));
+    color:#fff;
+    padding:18px 16px 14px;
+    position:sticky;
+    top:0;
+    z-index:50;
+    box-shadow:0 2px 8px rgba(0,0,0,.15);
+  }
+  header h1{
+    margin:0;
+    font-size:1.15rem;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  header h1 .flame{color:var(--gold-light);}
+  header p{margin:4px 0 0;font-size:.78rem;color:#c9d3de;}
+  nav.tabs{
+    display:flex;
+    gap:6px;
+    margin-top:12px;
+    overflow-x:auto;
+  }
+  nav.tabs button{
+    flex:0 0 auto;
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.18);
+    color:#e9edf2;
+    padding:8px 14px;
+    border-radius:20px;
+    font-size:.82rem;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  nav.tabs button.active{
+    background:var(--gold);
+    border-color:var(--gold);
+    color:#2a2200;
+    font-weight:600;
+  }
+  main{
+    max-width:900px;
+    margin:0 auto;
+    padding:16px;
+  }
+  .card{
+    background:var(--card);
+    border-radius:var(--radius);
+    padding:16px;
+    margin-bottom:14px;
+    box-shadow:0 1px 3px rgba(0,0,0,.06);
+    border:1px solid var(--border);
+  }
+  .row{display:flex;gap:10px;flex-wrap:wrap;}
+  .row > *{flex:1 1 140px;}
+  label{font-size:.75rem;color:var(--muted);display:block;margin-bottom:3px;font-weight:600;}
+  input[type=text],input[type=search],select,textarea{
+    width:100%;
+    padding:9px 10px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    font-size:.9rem;
+    background:#fff;
+    color:#1a2433;
+    font-family:inherit;
+    color-scheme:light;
+  }
+  input[type=text]::placeholder,input[type=search]::placeholder,textarea::placeholder{color:#8a8f98;opacity:1;}
+  select{cursor:pointer;}
+  select option{color:#1a2433;background:#fff;}
+  textarea{resize:vertical;min-height:70px;}
+  button.btn{
+    border:none;
+    border-radius:8px;
+    padding:9px 16px;
+    font-size:.85rem;
+    cursor:pointer;
+    font-weight:600;
+  }
+  .btn-primary{background:var(--navy);color:#fff;}
+  .btn-primary:hover{background:var(--navy-dark);}
+  .btn-gold{background:var(--gold);color:#2a2200;}
+  .btn-gold:hover{background:var(--gold-light);}
+  .btn-outline{background:#fff;border:1px solid var(--border)!important;color:var(--text);}
+  .btn-danger{background:var(--danger);color:#fff;}
+  .btn-sm{padding:5px 10px;font-size:.75rem;}
+  .btn-block{width:100%;}
+  button.btn:disabled{opacity:.4;cursor:not-allowed;}
+  h2.section-title{
+    font-size:1rem;
+    margin:0 0 10px;
+    color:var(--navy);
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .badge{
+    display:inline-block;
+    padding:2px 9px;
+    border-radius:20px;
+    font-size:.68rem;
+    font-weight:700;
+    color:#fff;
+    white-space:nowrap;
+  }
+  .song-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    padding:10px 4px;
+    border-bottom:1px solid var(--border);
+  }
+  .song-item:last-child{border-bottom:none;}
+  .song-title{font-weight:600;font-size:.92rem;}
+  .song-meta{font-size:.72rem;color:var(--muted);margin-top:2px;}
+  .song-actions{display:flex;gap:6px;flex-shrink:0;}
+  .empty-state{
+    text-align:center;
+    color:var(--muted);
+    padding:30px 10px;
+    font-size:.85rem;
+  }
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(20,25,35,.55);
+    display:flex;align-items:flex-end;justify-content:center;
+    z-index:200;
+  }
+  .modal{
+    background:#fff;
+    border-radius:16px 16px 0 0;
+    max-width:520px;width:100%;
+    max-height:88vh;
+    overflow-y:auto;
+    padding:20px;
+  }
+  @media(min-width:640px){
+    .modal-overlay{align-items:center;}
+    .modal{border-radius:16px;}
+  }
+  .modal h3{margin-top:0;color:var(--navy);}
+  .field{margin-bottom:12px;}
+  .stage-flow{
+    display:flex;
+    align-items:center;
+    gap:4px;
+    flex-wrap:wrap;
+    margin-bottom:14px;
+  }
+  .stage-dot{
+    flex:1;
+    text-align:center;
+    padding:8px 4px;
+    border-radius:8px;
+    background:#eee;
+    font-size:.7rem;
+    font-weight:700;
+    color:var(--muted);
+    border:2px solid transparent;
+  }
+  .stage-dot.active{background:var(--navy);color:#fff;}
+  .stage-dot.done{background:#dff0e4;color:var(--green);}
+  .arrow{color:var(--muted);font-size:.8rem;}
+  .picker-item{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:9px 10px;border:1px solid var(--border);border-radius:8px;margin-bottom:6px;cursor:pointer;
+    font-size:.88rem;
+  }
+  .picker-item.selected{border-color:var(--gold);background:#fdf7e6;}
+  .picker-item .chk{
+    width:18px;height:18px;border-radius:5px;border:2px solid var(--border);flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;font-size:.7rem;color:transparent;
+  }
+  .picker-item.selected .chk{background:var(--gold);border-color:var(--gold);color:#2a2200;}
+  textarea#waPreview{width:100%;min-height:220px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.82rem;}
+  .toast{
+    position:fixed;bottom:16px;left:50%;transform:translateX(-50%);
+    background:var(--navy);color:#fff;padding:10px 18px;border-radius:20px;
+    font-size:.82rem;z-index:300;box-shadow:0 4px 12px rgba(0,0,0,.2);
+    opacity:0;pointer-events:none;transition:opacity .2s, bottom .2s;
+  }
+  .toast.show{opacity:1;bottom:26px;}
+  .helper-text{font-size:.75rem;color:var(--muted);margin-top:6px;line-height:1.5;}
+  .history-item{padding:10px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;}
+  .history-item h4{margin:0 0 4px;font-size:.88rem;color:var(--navy);}
+  .history-item .meta{font-size:.72rem;color:var(--muted);}
+  .counter-pill{
+    display:inline-block;background:var(--navy);color:#fff;border-radius:12px;
+    padding:1px 9px;font-size:.68rem;margin-left:6px;
+  }
+  .file-input-wrap{
+    border:2px dashed var(--border);border-radius:10px;padding:20px;text-align:center;
+    font-size:.85rem;color:var(--muted);cursor:pointer;
+  }
+  .diff-box{background:#fbf7ec;border:1px solid #eadfb8;border-radius:8px;padding:8px 10px;margin:4px 0;}
+  .diff-box .diff-label{font-weight:700;color:var(--navy);font-size:.78rem;}
+  .diff-box .diff-old{color:#a33;text-decoration:line-through;font-size:.8rem;white-space:pre-wrap;}
+  .diff-box .diff-new{color:#1a7a3a;font-size:.8rem;white-space:pre-wrap;}
+  .lyrics-preview-block{border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:10px;}
+  .lyrics-preview-block h4{margin:0 0 4px;color:var(--navy);font-size:.92rem;}
+  .lyrics-preview-block .lp-meta{font-size:.72rem;color:var(--muted);margin-bottom:6px;}
+  .lyrics-preview-block pre{white-space:pre-wrap;font-family:inherit;font-size:.85rem;margin:0;color:#1a2433;}
+  #printSetlistArea{display:none;}
+  @media print{
+    body *{visibility:hidden;}
+    #printSetlistArea, #printSetlistArea *{visibility:visible;}
+    #printSetlistArea{display:block;position:absolute;top:0;left:0;width:100%;padding:20px;}
+    #printSetlistArea h1{font-size:1.3rem;margin-bottom:2px;}
+    #printSetlistArea .print-sub{font-size:.85rem;color:#555;margin-bottom:16px;}
+    #printSetlistArea .print-song{page-break-inside:avoid;margin-bottom:18px;}
+    #printSetlistArea .print-song h3{font-size:1rem;margin:0 0 2px;border-bottom:1px solid #999;padding-bottom:2px;}
+    #printSetlistArea .print-song .print-meta{font-size:.75rem;color:#555;margin-bottom:6px;}
+    #printSetlistArea .print-song pre{white-space:pre-wrap;font-family:inherit;font-size:.9rem;margin:0;}
+  }
+</style>
+</head>
+<body>
+
+<div id="printSetlistArea"></div>
+
+<header>
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
+    <div>
+      <h1><span class="flame">&#128293;</span> Database Lagu PDPKK</h1>
+      <p>Berdasarkan struktur Pujian &amp; Penyembahan Mazmur 100 &mdash; Handout SPBI Kelas Dasar</p>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+      <button id="btnAdminToggle" class="btn btn-sm" style="background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.25);white-space:nowrap;">&#128274; Admin</button>
+      <span id="cloudStatusBadge" style="font-size:.65rem;color:#e9edf2;background:rgba(255,255,255,.12);padding:2px 8px;border-radius:10px;white-space:nowrap;">&#128241; Mode Lokal</span>
+    </div>
+  </div>
+  <nav class="tabs">
+    <button data-tab="db" class="active">Database Lagu</button>
+    <button data-tab="setlist">Susun Setlist</button>
+    <button data-tab="pending">Perubahan Tertunda <span class="counter-pill" id="pendingCountBadge" style="display:none;">0</span></button>
+    <button data-tab="history">Riwayat Setlist</button>
+    <button data-tab="io">Import / Export</button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ===================== TAB: DATABASE ===================== -->
+  <section id="tab-db">
+    <div class="card">
+      <h2 class="section-title">Cari &amp; Filter Lagu <span class="counter-pill" id="songCount">0</span></h2>
+      <div class="row">
+        <div>
+          <label>Cari judul lagu</label>
+          <input type="search" id="searchInput" placeholder="mis. bersyukur, syukur, percaya...">
+        </div>
+        <div>
+          <label>Kategori</label>
+          <select id="filterCategory"><option value="">Semua kategori</option></select>
+        </div>
+        <div>
+          <label>Tempo</label>
+          <select id="filterTempo">
+            <option value="">Semua tempo</option>
+            <option value="Lambat">Lambat</option>
+            <option value="Sedang">Sedang</option>
+            <option value="Cepat">Cepat</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-top:12px;">
+        <button class="btn btn-gold" id="btnAddSong">+ Tambah Lagu Baru</button>
+      </div>
+    </div>
+
+    <div class="card" id="songListCard">
+      <div id="songListContainer"></div>
+    </div>
+  </section>
+
+  <!-- ===================== TAB: SETLIST BUILDER ===================== -->
+  <section id="tab-setlist" style="display:none;">
+    <div class="card">
+      <h2 class="section-title">Susun Setlist &mdash; Alur Mazmur 100</h2>
+      <p class="helper-text">Sesuai handout SPBI: 4 tahap wajib naik bertahap &mdash; <b>Persaudaraan &rarr; Syukur &rarr; Pujian &rarr; Penyembahan</b> (tidak boleh loncat tahap). Slot Iman / Persembahan / Penutup bersifat opsional, dipakai sesuai kebutuhan PD hari itu.</p>
+      <div class="stage-flow" id="stageFlow"></div>
+      <div id="setlistStageArea"></div>
+    </div>
+  </section>
+
+  <!-- ===================== TAB: PENDING CHANGES ===================== -->
+  <section id="tab-pending" style="display:none;">
+    <div class="card">
+      <h2 class="section-title">Perubahan Tertunda</h2>
+      <p class="helper-text" id="pendingModeExplain"></p>
+      <div id="pendingContainer"></div>
+    </div>
+  </section>
+
+  <!-- ===================== TAB: HISTORY ===================== -->
+  <section id="tab-history" style="display:none;">
+    <div class="card">
+      <h2 class="section-title">Riwayat Setlist Tersimpan</h2>
+      <div id="historyContainer"></div>
+    </div>
+  </section>
+
+  <!-- ===================== TAB: IMPORT / EXPORT ===================== -->
+  <section id="tab-io" style="display:none;">
+    <div class="card">
+      <h2 class="section-title">Export Database Lagu</h2>
+      <p class="helper-text">Simpan seluruh database lagu sebagai file CSV (bisa dibuka di Excel) atau JSON (untuk backup / pindah perangkat).</p>
+      <div class="row">
+        <button class="btn btn-primary" id="btnExportCsv">Export ke CSV (Excel)</button>
+        <button class="btn btn-outline" id="btnExportJson">Export ke JSON (backup)</button>
+      </div>
+    </div>
+    <div class="card">
+      <h2 class="section-title">Import Database Lagu</h2>
+      <p class="helper-text">Format CSV harus punya kolom: <code>judul, kategori, tempo, jenis_syukur, lirik, link_audio, link_video, catatan</code>. Nilai kategori: persaudaraan / syukur / pujian / penyembahan / iman / persembahan / penutup. Import akan <b>menambahkan</b> ke database yang ada (tidak menghapus data lama).</p>
+      <input type="file" id="csvFileInput" accept=".csv" style="display:none;">
+      <div class="file-input-wrap" id="csvDropArea">Ketuk untuk pilih file CSV</div>
+    </div>
+    <div class="card">
+      <h2 class="section-title">Reset Database</h2>
+      <p class="helper-text">Menghapus semua lagu dan mengembalikan ke data contoh awal dari handout. Tidak bisa dibatalkan.</p>
+      <button class="btn btn-danger" id="btnResetDb">Reset ke Data Awal</button>
+    </div>
+    <div class="card" id="cloudSyncCard" style="display:none;">
+      <h2 class="section-title">Sinkronisasi Cloud <span id="cloudStatusBadge2" class="counter-pill">-</span></h2>
+      <p class="helper-text">Data lagu, setlist, dan antrean persetujuan otomatis tersinkron ke semua perangkat yang membuka link Artifact ini. Gunakan tombol di bawah hanya jika ada perangkat yang datanya "ketinggalan" atau tidak cocok.</p>
+      <div class="row">
+        <button class="btn btn-outline" id="btnForcePush">&#8593; Kirim Data Perangkat Ini ke Cloud</button>
+        <button class="btn btn-outline" id="btnForcePull">&#8595; Tarik Data dari Cloud ke Perangkat Ini</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div id="modalRoot"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   KONFIGURASI KATEGORI (berdasar Handout SPBI Kelas Dasar - Sesi IV & V)
+   ============================================================ */
+const CATEGORIES = [
+  {id:'persaudaraan', label:'Persaudaraan', color:'#5b7fa6', stage:1, desc:'Bersifat horisontal, antar sesama, ice breaking / memecah kekakuan, tetap berpusat kepada Tuhan.'},
+  {id:'syukur',       label:'Syukur',       color:'#3f8f6d', stage:2, desc:'Bercerita tentang kasih Tuhan (pertolongan, kebaikan, pengampunan, dll), sudah fokus kepada Tuhan.'},
+  {id:'pujian',       label:'Pujian',       color:'#c98a1f', stage:3, desc:'Ungkapan atribut Tuhan: kebesaran, kehebatan, dahsyat, ajaib, luar biasa, hebat.'},
+  {id:'penyembahan',  label:'Penyembahan',  color:'#8a3f8f', stage:4, desc:'Ungkapan kekaguman, rasa hormat, tunduk, pemujaan, menempatkan Tuhan yang terutama.'},
+  {id:'iman',         label:'Iman',         color:'#3f6f8f', stage:null, desc:'Ungkapan kepercayaan kepada Tuhan, meneguhkan hati, beriman dan berpengharapan.'},
+  {id:'persembahan',  label:'Persembahan',  color:'#8f6f3f', stage:null, desc:'Ungkapan persembahan hidup, harapan, materi (saat kolekte).'},
+  {id:'penutup',      label:'Penutup',      color:'#6f6f6f', stage:null, desc:'Perutusan menjadi saksi, melayani, kabar gembira, penyemangatan; atau peneguhan tema hari itu.'},
+];
+const CAT_MAP = Object.fromEntries(CATEGORIES.map(c=>[c.id,c]));
+const STAGE_ORDER = CATEGORIES.filter(c=>c.stage).sort((a,b)=>a.stage-b.stage);
+const EXTRA_CATS = CATEGORIES.filter(c=>!c.stage);
+
+const STORAGE_KEY = 'pdpkk_lagu_db_v1';
+const HISTORY_KEY = 'pdpkk_setlist_history_v1';
+const PENDING_KEY = 'pdpkk_lagu_pending_v1';
+const ADMIN_PIN_KEY = 'pdpkk_lagu_admin_pin_v1';
+const DEFAULT_ADMIN_PIN = '1234';
+let isAdmin = false; // reset setiap kali halaman dibuka ulang
+
+/* ============================================================
+   SINKRONISASI CLOUD (antar perangkat / laptop <-> HP)
+   ============================================================ */
+const CLOUD_SEED_DOC = 'config/seed';
+const CLOUD_PIN_DOC = 'config/adminPin';
+const CLIENT_ID = 'c_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+let dbApi = null;
+let cloudReady = false;
+let cloudSongsCache = {};   // id -> JSON terakhir yang sudah dikirim/diterima dari cloud
+let cloudPendingCache = {};
+let cloudHistoryCache = {};
+let suppressCloudEcho = false;
+
+/* ============================================================
+   DATA AWAL — persis daftar "Bedah Lagu" (Sesi V, hlm 23-26)
+   dari Handout SPBI Kelas Dasar 2023
+   ============================================================ */
+function seedData(){
+  const mk = (title,category,tempo=null,syukurType=null) => ({
+    id: crypto.randomUUID(), title, category, tempo, syukurType, lyrics:'', audioUrl:'', videoUrl:'', notes:'', createdAt: Date.now()
+  });
+  return [
+    // PERSAUDARAAN
+    mk('Hari ini Kurasa Bahagia','persaudaraan'),
+    mk('Roh Tercurah','persaudaraan'),
+    mk('Satukanlah Hati Kami','persaudaraan'),
+    mk('Bersuka','persaudaraan'),
+    mk('Datang ke Hadirat Tuhan','persaudaraan'),
+    mk('Nyanyi bagi Dia','persaudaraan'),
+    // SYUKUR - lambat, perbuatan Tuhan + syukur
+    mk('Bapa Engkau Sungguh Baik','syukur','Lambat','perbuatan_syukur'),
+    mk('Kubersyukur Bapa','syukur','Lambat','perbuatan_syukur'),
+    mk('Sejauh Timur dari Barat','syukur','Lambat','perbuatan_syukur'),
+    mk('Dengan Apa kan Kubalas','syukur','Lambat','perbuatan_syukur'),
+    mk("Sgala Pujian dan Syukur",'syukur','Lambat','perbuatan_syukur'),
+    mk('Kasih Allahku Sungguh Tlah Terbukti','syukur','Lambat','perbuatan_syukur'),
+    // SYUKUR - lambat, perbuatan Tuhan saja
+    mk("S'mua Baik",'syukur','Lambat','perbuatan'),
+    mk('Tak Terbatas','syukur','Lambat','perbuatan'),
+    mk('BersamaMu Bapa','syukur','Lambat','perbuatan'),
+    mk('Karya Terbesar','syukur','Lambat','perbuatan'),
+    mk('Sungguh Indah','syukur','Lambat','perbuatan'),
+    mk('Siapakah Aku ini Tuhan','syukur','Lambat','perbuatan'),
+    // SYUKUR - cepat
+    mk("S'gala Puji Syukur",'syukur','Cepat'),
+    mk("Bersyukurlah (na..na..na)",'syukur','Cepat'),
+    mk('Bersyukurlah','syukur','Cepat'),
+    mk('Kecaplah dan Lihatlah','syukur','Cepat'),
+    mk("S'bab Tuhan Dia Baik",'syukur','Cepat'),
+    mk("S'bab Tuhan Baik",'syukur','Cepat'),
+    // PUJIAN - sedang
+    mk('Besarkan Nama Tuhan','pujian','Sedang'),
+    mk('Nyanyilah dan Menarilah','pujian','Sedang'),
+    mk('Allah itu Baik','pujian','Sedang'),
+    mk('Tuhan Yesus Baik','pujian','Sedang'),
+    mk('Dia Tak Pernah Gagal','pujian','Sedang'),
+    mk('Betapa Baiknya Engkau Tuhan','pujian','Sedang'),
+    // PUJIAN - cepat
+    mk('Nama Yesus','pujian','Cepat'),
+    mk('Serukan Namanya','pujian','Cepat'),
+    mk('Tuhan yang Benar','pujian','Cepat'),
+    mk('Ajaib Kau Tuhan','pujian','Cepat'),
+    mk('Hatiku Percaya','pujian','Cepat'),
+    // PENYEMBAHAN
+    mk('Kau yang Terindah','penyembahan'),
+    mk('Yesus Kami Puja','penyembahan'),
+    mk('Lebih Dalam Kumenyembah','penyembahan'),
+    mk('Besar dan Ajaiblah KaryaMu','penyembahan'),
+    mk('Dia Sungguh Indah','penyembahan'),
+    mk('Kaulah Segalanya','penyembahan'),
+    // IMAN
+    mk('Hatiku Percaya','iman'),
+    mk('Lingkupiku','iman'),
+    mk('Kaulah Harapan','iman'),
+    mk('Mukjijat itu Nyata','iman'),
+    mk('KuasaMu Terlebih Besar','iman'),
+    mk('Kemenangan Terjadi Di sini','iman'),
+    // PERSEMBAHAN
+    mk('Kupersembahkan Hidupku','persembahan'),
+    mk('Hati Sebagai Hamba','persembahan'),
+    mk('Tuhan Inilah Hidupku','persembahan'),
+    mk('Hidup Ini adalah Kesempatan','persembahan'),
+    mk('Sungguh Kubangga Bapa','persembahan'),
+    mk('Kuhidup BagiMu','persembahan'),
+    // PENUTUP
+    mk('Kukan Bangkit (Mari Kita Semua)','penutup'),
+    mk('Api Kemuliaan','penutup'),
+    mk('Jangan Lelah','penutup'),
+    mk('Ada Satu Sobatku','penutup'),
+    mk('Trima Sukacita Surga','penutup'),
+  ];
+}
+
+
+/* ============================================================
+   DATA TAMBAHAN — Daftar Lagu Rohani Depmus GBI Menorah (429 judul)
+   Format: [judul, key, P/W, tema]. Kategori dipetakan otomatis dari tema.
+   ============================================================ */
+const GBI_IMPORT_KEY = 'pdpkk_gbi_import_v1';
+const GBI_SONGS = [["Allah itu baik", "A", "P", "Kebaikan Tuhan, Kasih setia"], ["ALLAH SUMBER KUATKU", "A", "P", "Kekuatan Iman"], ["Bapa lembutkanlah hatiku", "A", "W", "Pemulihan/syukur"], ["Benteng Hidupku", "A", "P", "Kekuatan, Jaminan Hidup"], ["DarahMu Yesus", "A", "W", "Penebusan & pengorbanan."], ["DIA SUNGGUH BAIK", "A", "P", "Kebaikan Tuhan/syukur"], ["DRAW ME CLOSE", "A", "W", "INTIMATE"], ["DWELL IN YOUR HOUSE", "A", "W", "INTIMATE"], ["ELEVATE", "A", "P", "WARFARE"], ["GLORIFY YOUR NAME", "A", "W", "GLORIFY"], ["God is The Strength", "A", "P", "Power and Strength"], ["HOW GREAT THOU ART", "A", "W", "HIGH PRAISE"], ["I STAND IN AWE OF YOU", "A", "W", "GLORIFY"], ["Imanuel", "A", "W", "Berserah"], ["INDAH BERSAMA-MU", "A", "W", "KEINTIMAN"], ["JADIKAN KAMI SATU", "A", "W", "KESATUAN UNITY"], ["JALAN HIDUP ORANG BENAR", "A", "P", "PENGHARAPAN"], ["Jesus At The Center", "A", "W", "Keintiman"], ["KARENA KITA (WE ARE THE REASON)", "A", "W", "SALIB"], ["KASIH", "A", "W", "Kasih, Ajari kami"], ["Kasih Masih Ada", "A", "W", "Kasih"], ["Kau Berikan Kesempatan", "A", "W", "Iman"], ["Kau Mengasihiku", "A", "W", "Kasih Bapa"], ["Kau Rajaku", "A", "W", "Pengagungan"], ["Kau Yang Layak", "A", "W", "Penyembahan"], ["Kerinduanku", "A", "W", "Keintiman"], ["KU KAGUM AKAN ENGKAU", "A", "W", "KEKAGUMAN AKAN TUHAN"], ["Lebih Dari Pemenang", "A", "P", "Kuasa, Pemenang"], ["LEBIH DARI SEGALANYA (Above All)", "A", "W", "Pengagungan, Pengorbanan"], ["Lingkupiku (Still)", "A", "W", "Iman"], ["Malam Kudus", "A", "W", "Natal"], ["MENGENAL-MU", "A", "W", "KERINDUAN KEPADA ALLAH"], ["MengenalMu", "A", "W", "Keintiman"], ["Mujizat Dalam Bersyukur", "A", "W", "Iman"], ["Nothing Is Impossible", "A", "P", "Iman"], ["PELANGI KASIH", "A", "W", "IMAN, KEBAIKAN"], ["PELANGI SEHABIS HUJAN", "A", "W", "KASIH, IMAN"], ["PENYERTAANMU", "A", "W", "KASIH, SYUKUR"], ["PERISAIKU", "A", "P", "IMAN, KEBAIKAN, KESAKSIAN"], ["PERMATA HATIKU", "A", "W", "KASIH"], ["ROHMU YANG HIDUP", "A", "W", "KASIH, SYUKUR, BERSERAH"], ["SHOUT TO THE LORD", "A", "W", "SAVIOR KING"], ["THE OLD RUGGED CROSS", "A", "W", "CROSS"], ["To Worship You", "A", "W", "Keintiman"], ["WONDERFUL DAY", "A", "W", "MARIEGE"], ["Yang Kusembah Hanya YESUS", "A", "W", "Keintiman,Pengagungan"], ["Yang Terutama Di Dalam Hidup ini", "A", "W", "Keintiman, Memuliakan"], ["YOU ARE MY HIDING PLACE", "A", "W", "FAITH SONG"], ["Christ is Enough", "B", "W", "pengagungan, komitmen"], ["Mataku Tertuju PadaMu", "B", "W", "Iman, Kemenangan"], ["SALVATION IS HERE", "B", "P", "salvation"], ["Kau Allah Yang Kudus", "Bb", "W", "Kekudusan - Pengagungan"], ["Kemurahan Tuhan", "Bb", "W", "Kemurahan, Kebesaran"], ["Lekat Dalam HatiMu", "Bb", "W", "Keintiman"], ["PEGANGLAH TANGANKU ROH KUDUS", "Bb", "W", "DOA, PENGAGUNGAN, SYUKUR"], ["PENGORBANANMU SEMPURNA", "Bb", "W", "KASIH, KEBAIKAN, SYUKUR"], ["Waktu TUHAN tolong saya", "Bb", "W", "Pengharapan,Pertolongan TUHAN"], ["Abba Ya Bapa", "C", "W", "Kasih"], ["Ajaib Kau Tuhan", "C", "P", "Kebesaran Tuhan"], ["AJAIB SUNGGUH AJAIB", "C", "P", "Kebesaran Tuhan, Keagungan, syukur"], ["Allah ditinggikan dgn sorak sorai", "C", "P", "pengagungan"], ["AWESOME GOD", "C", "W", "GLORIFY"], ["Bagi Tuhan tak ada yang mustahil", "C", "W", "Iman, Mujizat, Pemulihan"], ["Bagimu Pujian", "C", "W", "Penganggungan"], ["Bapa Engkau sungguh baik", "C", "W", "Ucapan syukur"], ["BersamaMu Bapa", "C", "W", "Kekuatan Iman"], ["Bersorak-sorailah", "C", "P", "Sorak sorai"], ["Bersyukur selalu", "C", "W", "Ucapan syukur"], ["Besar Allahku", "C", "W", "Kebesaran Tuhan"], ["BLESSED BE THE LORD", "C", "W", "BLESSED"], ["BLESSED BE THE NAME OF THE LORD (TERPUJILAH NAMA TUHAN)", "C", "W", "BLESSED"], ["Bri Api Bri Hujan", "C", "W", "Pengurapan"], ["CURAHKAN TUHANKU HUJAN ROHMU", "C", "W", "Pengurapan"], ["DALAM KRISTUS", "C", "W", "Iman"], ["DENGAN SAYAPMU", "C", "W", "IMAN"], ["DI SETIAP LANGKAHKU", "C", "P", "GEMBALA"], ["DI TENGAH OMBAK", "C", "W", "Iman"], ["EL SHADDAI", "C", "W", "EL SHADDAI"], ["FILL THIS TEMPLE", "C", "W", "HEART OF WORSHIP"], ["HIGHEST PLACE", "C", "W", "HIGH WORSHIP"], ["HOLY GROUND", "C", "W", "HIGH WORSHIP"], ["HOLY, HOLY, HOLY", "C", "W", "HIGH WORSHIP HOLLYNESS"], ["IT IS WELL WITH MY SOUL", "C", "W", "STRUGGLING"], ["KAMI B'RI PUJI", "C", "P", "KESUKAAN"], ["Kami T'rima", "C", "P", "Iman"], ["KASIH ALLAHKU", "C", "W", "Kasih"], ["KASIH BAPA", "C", "W", "Kasih"], ["KASIH YESUS LEBIH DARI SEMUA", "C", "P", "Kasih"], ["KASIH-MU TIADA DUANYA", "C", "W", "Kasih"], ["Kau Sangat Kucinta", "C", "W", "Kasih Bapa"], ["Kaulah Harapan", "C", "W", "Iman"], ["KEKUDUSAN-MU BAPA", "C", "W", "KEKUDUSAN"], ["KETIKA AKU BERBEBAN BERAT", "C", "W", "Nyanyian Iman"], ["KITALAH UMAT PEMENANG", "C", "P", "UMAT PEMENANG"], ["KU ADA / I'M HERE", "C", "W", "TRIMA KASIH, SYUKUR"], ["Ku Mau Cinta Yesus", "C", "W", "Iman, Kemenangan"], ["KU SANJUNG", "C", "W", "Pengagungan"], ["KUNAIKKAN SYUKUR", "C", "W", "PUJIAN SYUKUR"], ["Kuterpaku", "C", "P", "Kasih Bapa"], ["Kutetap Setia", "C", "W", "Kesetiaan"], ["Lebih Dalam Kumenyembah", "C", "W", "Penyembahan"], ["LEKAT DALAM HATI-MU", "C", "W", "KETENANGAN JIWA"], ["LORD I SURRENDER", "C", "W", "KASIH, BERSERAH, SYUKUR"], ["MAGNIFICENT", "C", "W", "GLORIFY"], ["MORNING HAS BROKEN", "C", "P", "FAITH SONG"], ["MULIA BAGI ANAK DOMBA", "C", "W", "KEMULIAAN TUHAN"], ["MY BEST FRIEND", "C", "P", "BEST FRIEND"], ["NYANYI BAGI DIA", "C", "P", "PUJIAN KEPADA ALLAH"], ["NYANYI PUJI TUHAN", "C", "P", "NYANYIAN PUJIAN"], ["NYANYILAH DAN MENARILAH", "C", "P", "NYANYIAN TARIAN"], ["O PRAISE THE NAME", "C", "W", "KASIH, PENGORBANAN, PENGAGUNGAN, KEBAIKAN"], ["OH YERUSALEM", "C", "W", "KASIH, IMAN"], ["ONE DAY AT A TIME", "C", "W", "SWEET JESUS / WONDERFUL TIME"], ["PANGGILAN RAJA-RAJA", "C", "P", "PENGAGUNGAN, PEPERANGAN"], ["PENGHARAPAN YANG PASTI", "C", "W", "KEBAIKAN"], ["PENYEMBAH YANG BENAR", "C", "P", "KASIH, DOA"], ["PERKENAN BAPA", "C", "W", "KASIH, DOA"], ["PILIHAN TERBAIKKU", "C", "W", "KASIH, SYUKUR, KESAKSIAN"], ["PRECIOUS LORD TAKE MY HAND", "C", "W", "PRECIOUS"], ["PULIHKANLAH", "C", "W", "DOA"], ["RAJA SGALA RAJA", "C", "P", "PENGAGUNGAN"], ["Sperti Rusa Rindu SungaiMu", "C", "W", "Keintiman, Kasih"], ["STILL", "C", "W", "FAITH SONG"], ["Sukacita Transformasi", "C", "P", "Kesukaan, Kegembiraan"], ["Tetap Setia", "C", "W", "Kebaikan, Mengasihi Tuhan"], ["THE FIRST NOEL", "C", "W", "NOEL CHRISTMAS"], ["THIS IS YOUR HOUSE", "C", "W", "GLORIFY"], ["Tiap Langkahku", "C", "P", "Iman, Ketenangan, Pimpinan Tuhan"], ["WHAT THE LORD HAS DONE IN ME", "C", "W", "FAITH SONG"], ["YESUS TUHAN Dan Allah Kami", "C", "W", "Pujian Penghormatan"], ["Ajaib AnugrahMu", "D", "W", "Keagungan, Syukur"], ["Allah yang Kekal (Ancient of Days)", "D", "P", "Pujian dan Hormat"], ["Allahku dasyat", "D", "P", "Kebesaran Tuhan, Pujian"], ["AMAZING GRACE", "D", "W", "GRACE"], ["ANCIENT OF DAYS", "D", "P", "KINGDOM OF GOD"], ["Andaikan ku harus memilih", "D", "W", "Kasih"], ["ANOINTING FALL ON ME", "D", "W", "ANOINTING"], ["AS THE DEER", "D", "W", "DEER"], ["Bapa Kau Setia", "D", "W", "Kasih setia, keintiman"], ["Bapa kupersembahkan tubuhku", "D", "W", "keintiman"], ["Bapa Yang Kekal", "D", "W", "Kasih Bapa"], ["BAPA YANG MENGASIHIKU", "D", "W", "Kebaikan Tuhan"], ["BLESSED ASSURANCE", "D", "W", "BLESSED"], ["Change my heart (Ubah Hatiku)", "D", "W", "Pemulihan"], ["COME, NOW IS THE TIME TO WORSHIP", "D", "P", "VISION"], ["Datanglah dan Bertahta", "D", "P", "Pujian Mujizat"], ["Datanglah Ke BaitNya", "D", "P", "Syukur"], ["Dengan apa kan kubalas", "D", "W", "Kebaikan Tuhan/syukur"], ["GOD IS GOOD ALL THE TIME", "D", "P", "GOODNESS"], ["Hati Hamba", "D", "W", "Kebaikan Tuhan"], ["HERE I AM TO WORSHIP", "D", "W", "DEEP WORSHIP"], ["I AM THE GOD THAT HEALETH THEE", "D", "W", "HEALER"], ["I SURRENDER ALL", "D", "W", "INTIMATE"], ["IN MOMENTS LIKE THESE", "D", "W", "INTIMATE"], ["INGAT KASIH-NYA THIS ABOUT HIS LOVE", "D", "W", "KASIH"], ["Jangan Pernah Menyerah", "D", "W", "Iman"], ["JIWAKU MERINDUKAN-MU", "D", "W", "KERINDUAN"], ["K'RAJAAN-MU DATANGLAH", "D", "W", "KRAJAAN TUHAN"], ["KAMI ANGKAT PUJIAN", "D", "P", "MAHA KUASA"], ["Kan Kami Angkat", "D", "P", "Iman"], ["KASIH ALLAH TAK BERKESUDAHAN", "D", "P", "Kasih"], ["Kasih Bapa (Delon)", "D", "W", "Kasih"], ["KASIH DARI SURGA", "D", "P", "Kasih"], ["Kasih Mu Lebih Dari Hidup", "D", "W", "Kesetiaan, Kasih"], ["KASIH SETIA-MU YANG KURASAKAN", "D", "W", "Kasih"], ["KAU ALLAH YANG SETIA", "D", "W", "ALLAH YANG SETIA"], ["KAU KUSEMBAH I EXALT THEE", "D", "W", "Pengagungan"], ["Kau Telah Memilihku", "D", "W", "Doa"], ["KAU UBAHKAN HIDUPKU", "D", "P", "PERBUATAN TUHAN"], ["Kaulah Kuatku", "D", "P", "Iman"], ["KITA DIPILIH", "D", "P", "PILIHAN TUHAN"], ["Ku Bangga Memiliki Mu", "D", "P", "Kuasa"], ["Ku Bersujud", "D", "W", "Keintiman"], ["Kubawa Korban Syukur", "D", "W", "Korban Syukur"], ["Kucari WajahMu", "D", "W", "Keintiman"], ["KUCINTA KAU - LOVE YOU SO MUCH", "D", "W", "KERINDUAN KEPADA ALLAH"], ["KUMASUKI GERBANG-NYA - I WILL ENTER", "D", "P", "NYANYIAN KEGIRANGAN"], ["Kunyanyi Haleluya", "D", "W", "Iman, Penyembahan"], ["Kupersembahkan Hidupku", "D", "W", "Iman"], ["Layak Tuhan dipuji", "D", "W", "Pengagungan"], ["Lebih Dalam Lagi", "D", "W", "Keintiman"], ["Malam Yang Indah", "D", "W", "Natal"], ["Mari Semua", "D", "P", "Kebesaran Tuhan - Pengagungan"], ["MENIKMATI KASIH", "D", "W", "HADIRAT TUHAN"], ["Mighty To Save", "D", "W", "Iman, Kemenangan"], ["NYANYIAN DI HATIKU", "D", "P", "NYANYIAN HATI"], ["OLEH DARAH YESUS / KU BEBAS", "D", "W", "KASIH, SYUKUR, PEPERANGAN"], ["OPEN THE EYES", "D", "P", "KASIH,"], ["PEMILIK HIDUPKU", "D", "W", "IMAN"], ["PEOPLE NEED THE LORD", "D", "W", "PRAY AND PASSION"], ["PRIBADI YANG MENGENAL HATIKU", "D", "W", "KASIH"], ["ROH KUDUS HADIR DISINI (Tiada yang mustahil)", "D", "W", "KASIH, IMAN"], ["SEARCH ME, O GOD", "D", "W", "passion to the lord"], ["SING HALLELUJAH TO THE LORD NYANYI PUJI BAGI TUHAN", "D", "W", "SING HALLELUJAH"], ["THE LORD'S MY SHEPHERD", "D", "W", "SHEPHERD LORD"], ["Tuhan Adalah Kekuatanku (Bagai Rajawali)", "D", "W", "Iman, Kekuatan, Rajawali"], ["WHAT A FRIEND WE HAVE IN JESUS", "D", "W", "FRIEND IN JESUS"], ["WITH ALL I AM", "D", "W", "FAITH SONG"], ["Ya TUHAN Kupercaya", "D", "W", "Pengharapan, Pertolongan TUHAN"], ["AJAIB KAU YESUS", "E", "W", "Pengagungaan/syukur"], ["Ajaiblah Tuhan", "E", "W", "keagungan/syukur"], ["ALL I NEED IS YOU", "E", "W", "NEED JESUS"], ["ANGGUR BARU", "E", "P", "DOA, KESAKSIAN"], ["ARISE", "E", "P", "ARISE"], ["AWESOME IN THIS PLACE", "E", "W", "AWESOMENESS"], ["Bapa surgawi", "E", "W", "Kebaikan Tuhan/syukur"], ["BETTER IS ONE DAY", "E", "P", "DWELLING HOUSE"], ["Dalam Yesus", "E", "W", "Kekuatan & mujizat"], ["DANCING IN THE JOY", "E", "P", "JOYFULL"], ["DIA LAHIR UNTUK KAMI", "E", "P", "Deklarasi, Natal"], ["FOR ALL YOU'VE DONE", "E", "P", "SAVIOR KING"], ["I COULD SING OF YOUR LOVE FOREVER", "E", "W", "SONG OF PRAISES"], ["I FEEL JESUS", "E", "W", "INTIMATE"], ["Karena Kau Setia", "E", "P", "Kasih Tuhan"], ["Kau Allah Yang Besar", "E", "W", "Kebesaran Tuhan - Pengagungan"], ["Kaulah Segalanya", "E", "W", "Kasih Bapa"], ["KERINDUAN HATI BAPA", "E", "W", "PANGGILAN TUHAN"], ["Kerinduanku (Ajarku tuk lebih lagi)", "E", "W", "Keintiman"], ["KU 'KAN BANGKIT", "E", "P", "NYANYIAN VISI"], ["Ku B'ri Yang Terbaik", "E", "W", "Iman"], ["Ku Di TanganMu", "E", "W", "Keintiman"], ["KU MENANG, KU MENANG", "E", "P", "KEMENANGAN"], ["KU PUNYA VISI", "E", "P", "VISI"], ["KUDUS", "E", "W", "KEKUDUSAN"], ["KUKASIHI KAU DENGAN KASIH TUHAN", "E", "P", "KELUARGA"], ["Kupercaya JanjiMu", "E", "W", "Kebesaran Tuhan, Janji Tuhan, Iman"], ["LAPANGKANLAH TEMPAT KEMAHMU (YESAYA 54: 2-3)", "E", "W", "VISI"], ["MARI KITA BERSUKA (LET US REJOICE AND BE GLAD)", "E", "P", "ALLAH YANG BERKUASA"], ["MASA PENUAIAN", "E", "P", "PENUAIAN"], ["MEREKA PERLUKAN", "E", "W", "NYANYIAN DOA"], ["MUSIM BARU (NEW SEASON)", "E", "P", "PENUAIAN"], ["My Redeemer Lives", "E", "P", "Pengorbanan Yesus"], ["NAMA DI ATAS SEGALA NAMA", "E", "W", "Pengagungan"], ["OPEN THE EYES OF MY HEART", "E", "P", "GLORIFY HOLLINESS"], ["PENEBUS HIDUPKU", "E", "P", "KEBAIKAN, IMAN"], ["PERTOLONGANMU", "E", "W", "KASIH, KEBAIKAN, SYUKUR"], ["RAJA YANG HEBAT", "E", "P", "IMAN, PENGAGUNGAN, PEPERANGAN"], ["RAYAKAN", "E", "P", "SYUKUR"], ["RINDU SLALU", "E", "W", "KASIH"], ["ROH ALLAH YANG HIDUP", "E", "W", "DOA"], ["ROH KUDUS HADIR DISINI", "E", "W", "DOA, KEBAIKAN"], ["ROH KUDUS KAU HADIR DISINI", "E", "W", "KASIH"], ["RUMAH DOA", "E", "W", "PERSEMBAHAN HIDUP"], ["S'BAB TUHAN BAIK", "E", "P", "TUHAN BAIK"], ["Sayang Disayang", "E", "P", "Kasih, Glory"], ["Sejauh Timur Dari Barat", "E", "W", "Pengampunan, Pengagungan, Syukur"], ["Tak tertandingi", "E", "P", "Kekuatan Tuhan, Kemenangan"], ["THE HEART OF WORSHIP", "E", "W", "HEART OF WORSHIP"], ["THE RIVER OF LOVE", "E", "P", "LOVE"], ["THIS IS THE DAY", "E", "P", "JOYFULL"], ["THY WORD", "E", "W", "WORD"], ["TO HIM WHO SITS ON THE THRONE (BAGI DIA YANG BERTAHTA)", "E", "W", "GLORIFY"], ["YOU ARE HOLY", "E", "W", "holly"], ["Ajar kami Tuhan", "F", "W", "Kebesaran Tuhan"], ["Ajarku berharap hanya padaMu", "F", "W", "Iman"], ["ALL HONOR", "F", "W", "HONORING"], ["Allah Peduli", "F", "W", "Iman, Persoalan"], ["Allah sanggup", "F", "P", "Mujizat"], ["Api KemuliaanNya", "F", "P", "Kebangkitan"], ["ARTI KEHADIRAN-MU", "F", "W", "PENYERTAAN TUHAN"], ["Bangkit, Serukan Nama Yesus", "F", "P", "Kemenangan, kebangkitan"], ["Biarpun Gunung-Gunung Beranjak", "F", "P", "Kasih Setia"], ["BILA ROH ALLAH ADA DI DALAMKU", "F", "P", "ROH KUDUS TARIAN DAUD"], ["Dia sanggup", "F", "W", "mujizat"], ["Diam di hadiratMu", "F", "W", "Keintiman, penyembahan"], ["GIVE TO THE LORD", "F", "P", "OFFERING"], ["JALAN ORANG YANG BENAR", "F", "P", "PENGHARAPAN"], ["Jangan Lelah", "F", "P", "Iman"], ["JANJI-MU SEPERTI FAJAR", "F", "W", "JANJI"], ["Kasih Sejati", "F", "W", "Kasih"], ["Kau Berfirman", "F", "W", "Iman"], ["Kau Dambaanku", "F", "W", "Keintiman"], ["Kau Tetap Allah", "F", "W", "Iman"], ["KAU YANG TERINDAH", "F", "W", "ALLAH YANG LAYAK DISEMBAH"], ["KEBANGKITAN BESAR (GREAT AWAKENING)", "F", "P", "VISI"], ["Kemuliaan Bagi Allah", "F", "W", "Pengagungan, Kebesaran"], ["Kemuliaan Bagi Tuhan", "F", "W", "Pengagungan"], ["KU B'RI KEMULIAAN", "F", "P", "KEMULIAAN TUHAN"], ["KU KAN BERSUKA", "F", "P", "NYANYIAN KESUKAAN"], ["Ku Tak Akan Menyerah", "F", "W", "Iman"], ["KuasaMu BilurMu", "F", "W", "Pengorbanan Yesus"], ["KUCINTA K'LUARGA TUHAN", "F", "P", "NYANYIAN KELUARGA"], ["KUDUS-KUDUSLAH TUHAN (Kudatang Tuhan)", "F", "W", "KEKUDUSAN"], ["KUSIAPKAN HATIKU TUHAN", "F", "W", "FIRMAN TUHAN"], ["Lebih Dari Emas", "F", "W", "Syukur - Kasih Bapa"], ["Masyurkanlah NamaNya", "F", "P", "Kebesaran Tuhan - Pengagungan"], ["MEMANDANG WAJAH-MU", "F", "W", "Nyanyian Iman"], ["Mengalirlah Kuasa Roh Kudus", "F", "W", "Roh Kudus, Kerinduan, Haus"], ["Mujizat Setiap Hari", "F", "W", "Iman, Kemenangan"], ["NYANYI BAGI DIA LAGU BARU", "F", "P", "ALLAH YANG BESAR"], ["PENYELAMATKU", "F", "W", "KASIH, IMAN"], ["PERSEMBAHANKU", "F", "W", "SYUKUR"], ["PUJIAN SEJATI", "F", "W", "PUJIAN SEJATI"], ["RAJA DALAM HIDUPKU", "F", "P", "IMAN, KESAKSIAN"], ["RAJA MULIA", "F", "P", "PENGAGUNGAN"], ["RAJA PEMENANG", "F", "P", "KESAKSIAN, KASIH, IMAN, PEPERANGAN"], ["Satu Hal Yang Kurindu", "F", "W", "Keintiman, Kemurahan, Kerinduan"], ["Seperti Yang Kau Ingini", "F", "W", "Pengorbanan, Penebusan, Pertobatan"], ["Sgala Pujian", "F", "W", "Syukur dan Pujian"], ["TEMPAT PERTAMA", "F", "P", "KERINDUAN KEPADA ALLAH"], ["Tuhan yang benar", "F", "P", "Janji Tuhan"], ["UNITED WE STAND", "F", "P", "UNITY"], ["Waktu Daud Melompat-lompat", "F", "P", "Kesukaan, Sukacita"], ["ABOVE ALL", "G", "W", "CROSS"], ["Ada Panggilan Tuhan", "G", "W", "Panggilan Tuhan, Pengutusan"], ["Ada Satu Sobatku Yg Setia", "G", "P", "Kesetiaan Tuhan"], ["AGNUS DEI", "G", "W", "Pengagungan, Glory, Holy"], ["ALLAH BAPA KAMI MENGASIHIMU", "G", "W", "pengagungan"], ["Api KemuliaanMu", "G", "W", "Pengurapan"], ["ATMOSPHERE", "G", "W", "GLORIFY"], ["Awan Kemuliaan", "G", "W", "Kemuliaan, Pencurahan"], ["Bagaikan Bejana", "G", "W", "keintiman, karakter"], ["Bagi Allah Selama-lamanya", "G", "W", "Kemuliaan Syukur"], ["BAGI DIA", "G", "W", "Pengagungan"], ["Bapa trima kasih", "G", "P", "Ucapan syukur"], ["BAPAKU YANG BAIK", "G", "W", "Kasih"], ["BECAUSE HE LIVES", "G", "P", "OUR JESUS LIVES"], ["BerkatMu Tercurah", "G", "P", "Berkat"], ["Bersama keluargaku", "G", "W", "Keluarga"], ["Besar dan ajaiblah karyaMu", "G", "W", "Pengagungan"], ["Biar Sluruh Bumi", "G", "W", "pengagungan"], ["BILA ENGKAU TAK BESARTAKU", "G", "W", "Penyertaan Tuhan"], ["CELEBRATE JESUS (RAYAKAN YESUS)", "G", "P", "celebration"], ["CENTER OF MY JOY", "G", "P", "JOYFULL"], ["DALAMNYA KASIHMU BAPA", "G", "W", "Kasih & pemulihan"], ["Doa Yabes", "G", "W", "Doa & berkat"], ["DWELLING PLACES", "G", "W", "INTIMATE"], ["EAGLE'S WINGS", "G", "W", "INTIMATE"], ["Engkau Alasan Ku Hidup", "G", "W", "Kasih"], ["Give Thanks", "G", "W", "THANKFULL"], ["Gunung Kudus", "G", "W", "Keintiman"], ["HALLELUJAH TO THE LAMB", "G", "W", "GLORIFY"], ["HARK! THE HERALD ANGELS SING", "G", "P", "CHRISTMAS SONG"], ["HE IS EXALTED", "G", "W", "EXALTED"], ["HOSANNA", "G", "W", "HIGH WORSHIP"], ["I GIVE YOU MY HEART", "G", "W", "HEART OF WORSHIP"], ["I HAVE DECIDED TO FOLLOW JESUS", "G", "W", "passion to the lord"], ["I JUST WANT TO BE WHERE YOU ARE", "G", "W", "passion to the lord"], ["I LOVE YOU, LORD", "G", "W", "LOVE"], ["I SING PRAISES TO YOUR NAME", "G", "W", "GLORIFY"], ["I WILL ENTER HIS GATES", "G", "P", "JOYFULL"], ["I WILL RUN TO YOU", "G", "W", "CHASING LORD"], ["I WORSHIP YOU", "G", "W", "HIGH WORSHIP"], ["In Your Hands", "G", "W", "Intimate, Love"], ["Jadikan Aku Indah", "G", "W", "Keintiman"], ["Jadikan Kami Sehati", "G", "W", "Doa -  Unity"], ["Jadikanku Hamba Setia", "G", "W", "Kekudusan/keintiman"], ["JANGKAU ANAK MUDA", "G", "P", "PENGJANGKAUAN"], ["JANJI-MU", "G", "W", "JANJI"], ["JanjiMU Sperti Fajar", "G", "W", "Iman"], ["JEHOVAH JIREH", "G", "P", "PROVIDER"], ["Jesus It is You", "G", "W", "Iman"], ["JESUS WE ENTHRONE YOU", "G", "W", "GLORIFY"], ["Jingle Bells", "G", "P", "Natal"], ["Jiwaku Haus akan KasihMu", "G", "W", "Kehausan, kesetiaan"], ["Juru Slamatku", "G", "W", "Iman"], ["KAMI MEMUJI KEBESARAN-MU", "G", "W", "PUJIAN"], ["KAMI UMAT-MU", "G", "W", "DOA"], ["Karena SalibMu", "G", "W", "Pengorbanan Yesus"], ["KARYA TERBESAR", "G", "W", "Kasih"], ["KASIH YESUS INDAH DALAM HIDUPKU", "G", "W", "Kasih"], ["Kau Kuatku", "G", "P", "Iman"], ["Kau Mengenal Hatiku", "G", "W", "Kasih Bapa"], ["KAU TAK PERNAH TINGGALKANKU", "G", "W", "KERINDUAN KEPADA ALLAH"], ["Kecaplah Dan Lihatlah", "G", "P", "Kebaikan Tuhan"], ["Kekuatan Hatiku", "G", "W", "Iman"], ["Kemenangan Terjadi Di Sini", "G", "W", "Iman"], ["Kemenanganku", "G", "W", "Iman, Kemenangan"], ["KEMULIAAN TUHAN", "G", "W", "VISI"], ["KERINDUANKU (Irwan)", "G", "W", "KERINDUAN KEPADA ALLAH"], ["KING OF MAJESTY", "G", "P", "MAJESTIC"], ["Ku Berharap KepadaMu", "G", "W", "Iman"], ["Ku Berikan Syukurku", "G", "W", "Syukur - Kasih Bapa"], ["Ku Di B'ri Kuasa", "G", "P", "Kuasa"], ["KU HIDUP BAGI-MU", "G", "W", "hidup bagi Tuhan"], ["Ku Hidup BagiMu", "G", "W", "Kesetiaan"], ["Ku Kan Terbang", "G", "P", "Firman - Iman"], ["KU MAU ADA DI DEKAT-MU", "G", "W", "KERINDUAN KEPADA ALLAH"], ["KU MAU S'PERTI-MU YESUS", "G", "W", "NYANYIAN PENGHARAPAN"], ["KU NANTI ENGKAU", "G", "W", "KERINDUAN KEPADA ALLAH"], ["Kuasa NamaNya", "G", "P", "Firman - Iman"], ["KuasaMu Terlebih Besar", "G", "W", "Iman"], ["Kubersyukur Bapa", "G", "W", "Ucapan Syukur"], ["Kubrikan Hatiku", "G", "W", "Penyembahan"], ["Kucinta Kau Yesus", "G", "W", "Keintiman"], ["KUDUS-KUDUSLAH TUHAN", "G", "W", "KEKUDUSAN"], ["Kuduslah Tuhan", "G", "P", "Kekudusan - Pengagungan"], ["Kuingin BersamaMu", "G", "W", "Keintiman"], ["KURASAKAN KASIH-MU TUHAN", "G", "W", "PENGHARAPAN"], ["LEBIH DALAM LAGI (DEEPER IN LOVE)", "G", "W", "CINTA KEPADA ALLAH"], ["Maha Kuasa Maha Mulia", "G", "P", "Kemurahan, Kebesaran"], ["Manis Kau Dengar", "G", "W", "Pengagungan"], ["MATAKU TERTUJU PADA-MU", "G", "W", "Nyanyian Iman, Menyenangkan Tuhan"], ["MENGEJAR HADIR-MU", "G", "W", "KERINDUAN KEPADA ALLAH"], ["Mengejar HadirMu", "G", "W", "Keintiman"], ["MENYENANGKAN-MU", "G", "W", "MENYENANGKAN TUHAN"], ["MORE, MORE, MORE", "G", "P", "JOYFULL"], ["MOURNING INTO DANCING", "G", "P", "JOYFULL"], ["Mujizat Itu Nyata", "G", "W", "Iman, Mujizat"], ["MULIA (MAJESTY)", "G", "W", "Pengagungan"], ["Mulia Sembah Raja Mulia", "G", "W", "Pengagungan, Kemuliaan"], ["MY FIRST LOVE IS JESUS", "G", "W", "INTIMATE"], ["Natal Di Hatiku", "G", "W", "Natal"], ["NOTHING BUT THE BLOOD", "G", "W", "BLOOD OF JESUS"], ["NYANYI DAN BERSORAKLAH", "G", "W", "BERSORAK BAGI ALLAH"], ["NYANYIAN KEMENANGAN", "G", "P", "NYANYIAN KEMENANGAN"], ["O THE GLORY OF YOUR PRESENCE", "G", "W", "GLORIFY"], ["Oh Mulianya HadiratMu", "G", "W", "Keagungan, Kemuliaan"], ["OH, THE BLOOD OF JESUS", "G", "W", "BLOOD OF JESUS"], ["OLEH DARAH ANAK DOMBA", "G", "P", "KESAKSIAN, PEPERANGAN"], ["ONE WAY", "G", "P", "KESAKSIAN, KASIH, SYUKUR"], ["OPEN THE SKY", "G", "P", "IMAN, DOA"], ["PEMULIHAN KELUARGA", "G", "W", "IMAN, DOA"], ["PRAISE LOOKS GOOD ON YOU", "G", "W", "SACRIFICES OF PRAISE"], ["PUJIAN YANG MULIA", "G", "W", "KASIH, PENGAGUNGAN"], ["Ruang Maha Kudus", "G", "W", "Keintiman, Kekudusan"], ["Seputih Bulu Domba", "G", "W", "Kasih, Pengampunan"], ["SOFTLY AND TENDERLY", "G", "W", "COME HOME"], ["Tak sedetikpun", "G", "W", "Pengharapan"], ["Terima Kasih Tuhan", "G", "W", "Kebaikan, Syukur, Anugerah"], ["THE POWER OF YOUR LOVE", "G", "W", "CLOSER TO THE LORD"], ["There Is None Like You", "G", "W", "Pengagungan, Anugerah"], ["THROUGH IT ALL", "G", "W", "SING TO THE LORD"], ["TO GOD BE THE GLORY", "G", "W", "GLORIFY"], ["TOUCHING HEAVEN, CHANGING EARTH", "G", "P", "REVIVAL"], ["VIA DOLOROSA", "G", "W", "SALIB"], ["YESUS Dalam NamaMU Kubertelut", "G", "W", "Iman, Pengakuan"], ["YESUS Di Sanjung", "G", "W", "Pengagungan,Penghormatan"], ["ZAMAN ELIAH", "G", "P", "JESUS COMING SOON"]];
+const CAT_RULES = [
+  ['persaudaraan', /keluarga|unity|kesatuan|sehati|persaudaraan/],
+  ['persembahan',  /persembahan|offering|berserah|surrender|hidup bagi|korban syukur|komitmen/],
+  ['penutup',      /visi|vision|penuaian|pengutusan|panggilan|kesaksian|revival|kebangkitan|jangkau|coming soon/],
+  ['syukur',       /syukur|thank|kebaikan|goodness|tuhan baik|kasih setia|berkat|kemurahan|pertolongan|penyertaan/],
+  ['iman',         /iman|faith|pengharapan|mujizat|kemenangan|pemenang|janji|kekuatan|strength|percaya|warfare|peperangan|struggling|pemulihan|healer/],
+  ['penyembahan',  /keintiman|intimate|worship|penyembahan|kekudusan|holy|holl|kerinduan|salib|cross|blood|darah|pengorbanan|penebusan|kekaguman|cinta kepada|love|kasih/],
+  ['pujian',       /pengagungan|kebesaran|kuasa|joy|sorak|praise|pujian|kesukaan|glorify|glory|exalt|majest|keagungan|kemuliaan/],
+];
+function guessCategory(tema, pw){
+  const t = (tema||'').toLowerCase();
+  for(const [cat,re] of CAT_RULES){ if(re.test(t)) return cat; }
+  return pw==='P' ? 'pujian' : 'penyembahan';
+}
+function normTitle(t){ return (t||'').toLowerCase().replace(/[^a-z0-9]/g,''); }
+function gbiSongObjects(existing){
+  const seen = new Set((existing||[]).map(s=>normTitle(s.title)));
+  const out = [];
+  GBI_SONGS.forEach(([title,key,pw,tema])=>{
+    const n = normTitle(title);
+    if(seen.has(n)) return;
+    seen.add(n);
+    out.push({id: crypto.randomUUID(), title, category: guessCategory(tema,pw), tempo:null, syukurType:null,
+      key, pw: pw==='P'?'Praise':'Worship', tema, source:'GBI Menorah',
+      lyrics:'', audioUrl:'', videoUrl:'', notes:'', createdAt: Date.now()});
+  });
+  return out;
+}
+function mergeGbiOnce(){
+  try{ if(localStorage.getItem(GBI_IMPORT_KEY)) return; }catch(e){}
+  const added = gbiSongObjects(songs);
+  songs = songs.concat(added);
+  saveSongs();
+  try{ localStorage.setItem(GBI_IMPORT_KEY, '1'); }catch(e){}
+  if(added.length) setTimeout(()=>showToast(added.length+' lagu GBI Menorah ditambahkan'), 300);
+}
+
+/* ============================================================
+   STATE & PERSISTENCE
+   ============================================================ */
+let songs = [];
+let setlistDraft = {}; // { categoryId: [songId,...] }
+let currentStageIndex = 0; // index into full flow array (stages + extras)
+
+function loadSongs(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){ songs = JSON.parse(raw); }
+    else { songs = seedData(); saveSongs(); }
+  }catch(e){ songs = seedData(); saveSongs(); }
+  mergeGbiOnce();
+}
+function saveSongs(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(songs)); }catch(e){ showToast('Gagal menyimpan (storage penuh?)'); }
+  if(cloudReady && !suppressCloudEcho) pushSongsToCloud();
+}
+function loadHistory(){
+  try{ return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); }catch(e){ return []; }
+}
+function saveHistory(list){
+  try{ localStorage.setItem(HISTORY_KEY, JSON.stringify(list)); }catch(e){ showToast('Gagal menyimpan riwayat'); }
+  if(cloudReady && !suppressCloudEcho) pushHistoryToCloud(list);
+}
+
+/* ------------------------------------------------------------
+   Push satu koleksi (diff sederhana: hanya kirim dok yg berubah)
+   ------------------------------------------------------------ */
+async function diffAndPush(colName, list, cache){
+  if(!dbApi) return;
+  const col = dbApi.collection(colName);
+  const currentIds = new Set();
+  const toSet = [];
+  const toDelete = [];
+  (list||[]).forEach(item=>{
+    if(!item || !item.id) return;
+    currentIds.add(item.id);
+    const json = JSON.stringify(item);
+    if(cache[item.id] !== json) toSet.push([item, json]);
+  });
+  Object.keys(cache).forEach(id=>{ if(!currentIds.has(id)) toDelete.push(id); });
+
+  const BATCH = 20;
+  for(let i=0;i<toSet.length;i+=BATCH){
+    const chunk = toSet.slice(i,i+BATCH);
+    await Promise.all(chunk.map(([item,json])=>
+      col.doc(item.id).set(item).then(()=>{ cache[item.id] = json; }).catch(()=>{})
+    ));
+  }
+  for(let i=0;i<toDelete.length;i+=BATCH){
+    const chunk = toDelete.slice(i,i+BATCH);
+    await Promise.all(chunk.map(id=>
+      col.doc(id).delete().then(()=>{ delete cache[id]; }).catch(()=>{})
+    ));
+  }
+}
+function pushSongsToCloud(){ return diffAndPush('songs', songs, cloudSongsCache); }
+function pushPendingToCloud(list){ return diffAndPush('pending', list, cloudPendingCache); }
+function pushHistoryToCloud(list){ return diffAndPush('history', list, cloudHistoryCache); }
+
+function applyCloudSnapshot(colName, snap){
+  const cache = colName==='songs' ? cloudSongsCache : (colName==='pending' ? cloudPendingCache : cloudHistoryCache);
+  const arr = [];
+  snap.docs.forEach(d=>{
+    const data = d.data();
+    if(!data) return;
+    arr.push(data);
+    cache[d.id] = JSON.stringify(data);
+  });
+  suppressCloudEcho = true;
+  try{
+    if(colName==='songs'){
+      songs = arr;
+      try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(songs)); }catch(e){}
+      populateCategoryFilter();
+      renderSongList();
+    } else if(colName==='pending'){
+      arr.sort((a,b)=>(b.requestedAt||0)-(a.requestedAt||0));
+      try{ localStorage.setItem(PENDING_KEY, JSON.stringify(arr)); }catch(e){}
+      updatePendingBadge();
+      const pendingTab = document.getElementById('tab-pending');
+      if(pendingTab && pendingTab.style.display !== 'none') renderPending();
+    } else if(colName==='history'){
+      arr.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+      try{ localStorage.setItem(HISTORY_KEY, JSON.stringify(arr)); }catch(e){}
+      const historyTab = document.getElementById('tab-history');
+      if(historyTab && historyTab.style.display !== 'none') renderHistory();
+    }
+  } finally {
+    suppressCloudEcho = false;
+  }
+}
+
+function setCloudStatus(text, ok){
+  const el = document.getElementById('cloudStatusBadge');
+  if(el){
+    el.innerHTML = text;
+    el.style.background = ok ? 'rgba(60,180,120,.35)' : 'rgba(255,255,255,.12)';
+  }
+  const el2 = document.getElementById('cloudStatusBadge2');
+  if(el2) el2.innerHTML = text;
+  const card = document.getElementById('cloudSyncCard');
+  if(card) card.style.display = ok ? '' : 'none';
+}
+
+async function initCloudSync(){
+  try{
+    if(!(window.claude && typeof window.claude.use === 'function')){ setCloudStatus('&#128241; Mode Lokal', false); return; }
+    dbApi = await window.claude.use('db');
+  }catch(e){ dbApi = null; }
+  if(!dbApi){ setCloudStatus('&#128241; Mode Lokal', false); return; }
+
+  setCloudStatus('&#9203; Menyinkronkan...', false);
+  try{
+    const seedRef = dbApi.doc(CLOUD_SEED_DOC);
+    let snap = await seedRef.get();
+    if(!snap.exists){
+      // Coba klaim proses seeding (agar tidak dobel jika 2 perangkat dibuka bersamaan)
+      const lease = await seedRef.acquire({holder: CLIENT_ID, ttlMs: 20000});
+      if(lease.acquired){
+        snap = await seedRef.get();
+        if(!snap.exists){
+          await Promise.all([
+            diffAndPush('songs', songs, cloudSongsCache),
+            diffAndPush('pending', loadPending(), cloudPendingCache),
+            diffAndPush('history', loadHistory(), cloudHistoryCache),
+          ]);
+          try{
+            const pinSnap = await dbApi.doc(CLOUD_PIN_DOC).get();
+            if(!pinSnap.exists){ await dbApi.doc(CLOUD_PIN_DOC).set({pin:getAdminPin()}); }
+          }catch(e){}
+          await seedRef.set({seededAt: Date.now(), seededBy: CLIENT_ID, songCount: songs.length});
+        }
+      } else {
+        await new Promise(r=>setTimeout(r, 2500));
+      }
+    } else {
+      // Sudah ada data cloud — perangkat ini ikut data cloud (tarik sekali sebelum subscribe)
+      const [songsSnap, pendingSnap, historySnap, pinSnap] = await Promise.all([
+        dbApi.collection('songs').get(),
+        dbApi.collection('pending').get(),
+        dbApi.collection('history').get(),
+        dbApi.doc(CLOUD_PIN_DOC).get().catch(()=>({exists:false})),
+      ]);
+      applyCloudSnapshot('songs', songsSnap);
+      applyCloudSnapshot('pending', pendingSnap);
+      applyCloudSnapshot('history', historySnap);
+      if(pinSnap && pinSnap.exists){
+        const pinData = pinSnap.data();
+        if(pinData && pinData.pin){ try{ localStorage.setItem(ADMIN_PIN_KEY, pinData.pin); }catch(e){} }
+      }
+    }
+
+    dbApi.collection('songs').onSnapshot(snap=>applyCloudSnapshot('songs', snap), ()=>setCloudStatus('&#9888; Sinkron terputus', false));
+    dbApi.collection('pending').onSnapshot(snap=>applyCloudSnapshot('pending', snap), ()=>{});
+    dbApi.collection('history').onSnapshot(snap=>applyCloudSnapshot('history', snap), ()=>{});
+    dbApi.doc(CLOUD_PIN_DOC).onSnapshot(snap=>{
+      if(snap.exists){
+        const d = snap.data();
+        if(d && d.pin){ try{ localStorage.setItem(ADMIN_PIN_KEY, d.pin); }catch(e){} }
+      }
+    }, ()=>{});
+
+    cloudReady = true;
+    setCloudStatus('&#9729; Tersinkron', true);
+  }catch(e){
+    setCloudStatus('&#128241; Mode Lokal', false);
+  }
+}
+
+async function forcePushLocalToCloud(){
+  if(!dbApi){ showToast('Cloud tidak tersedia'); return; }
+  if(!confirm('Timpa data CLOUD dengan data di perangkat ini? Perangkat lain akan mengikuti data ini.')) return;
+  await Promise.all([
+    diffAndPush('songs', songs, cloudSongsCache),
+    diffAndPush('pending', loadPending(), cloudPendingCache),
+    diffAndPush('history', loadHistory(), cloudHistoryCache),
+  ]);
+  showToast('Data perangkat ini sudah dikirim ke cloud');
+}
+async function forcePullCloudToLocal(){
+  if(!dbApi){ showToast('Cloud tidak tersedia'); return; }
+  if(!confirm('Timpa data di PERANGKAT INI dengan data dari cloud?')) return;
+  const [songsSnap, pendingSnap, historySnap] = await Promise.all([
+    dbApi.collection('songs').get(),
+    dbApi.collection('pending').get(),
+    dbApi.collection('history').get(),
+  ]);
+  applyCloudSnapshot('songs', songsSnap);
+  applyCloudSnapshot('pending', pendingSnap);
+  applyCloudSnapshot('history', historySnap);
+  showToast('Data perangkat ini sudah disamakan dengan cloud');
+}
+
+/* ============================================================
+   ADMIN PIN & PERUBAHAN TERTUNDA (proteksi Edit/Hapus)
+   Non-admin: Edit/Hapus tidak langsung mengubah data, tapi masuk
+   antrean "Perubahan Tertunda" untuk disetujui/ditolak oleh admin.
+   ============================================================ */
+function getAdminPin(){
+  try{ return localStorage.getItem(ADMIN_PIN_KEY) || DEFAULT_ADMIN_PIN; }catch(e){ return DEFAULT_ADMIN_PIN; }
+}
+function setAdminPin(pin){
+  try{ localStorage.setItem(ADMIN_PIN_KEY, pin); }catch(e){ showToast('Gagal menyimpan PIN'); }
+  if(cloudReady){ dbApi.doc(CLOUD_PIN_DOC).set({pin}).catch(()=>{}); }
+}
+function loadPending(){
+  try{ return JSON.parse(localStorage.getItem(PENDING_KEY) || '[]'); }catch(e){ return []; }
+}
+function savePending(list){
+  try{ localStorage.setItem(PENDING_KEY, JSON.stringify(list)); }catch(e){ showToast('Gagal menyimpan perubahan tertunda'); }
+  updatePendingBadge();
+  if(cloudReady && !suppressCloudEcho) pushPendingToCloud(list);
+}
+function updatePendingBadge(){
+  const n = loadPending().length;
+  const badge = document.getElementById('pendingCountBadge');
+  if(!badge) return;
+  if(n>0){ badge.textContent = n; badge.style.display = ''; }
+  else { badge.style.display = 'none'; }
+}
+function updateAdminButton(){
+  const btn = document.getElementById('btnAdminToggle');
+  if(!btn) return;
+  if(isAdmin){
+    btn.innerHTML = '&#128275; Admin: Aktif';
+    btn.style.background = 'var(--gold)';
+    btn.style.color = '#2a2200';
+    btn.style.borderColor = 'var(--gold)';
+  } else {
+    btn.innerHTML = '&#128274; Admin';
+    btn.style.background = 'rgba(255,255,255,.12)';
+    btn.style.color = '#fff';
+    btn.style.borderColor = 'rgba(255,255,255,.25)';
+  }
+}
+function promptAdminPin(){
+  const root = document.getElementById('modalRoot');
+  root.innerHTML = `
+    <div class="modal-overlay" id="pinModalOverlay">
+      <div class="modal" style="max-width:340px;">
+        <h3>Masuk sebagai Admin</h3>
+        <p class="helper-text">Masukkan PIN admin untuk mengedit/menghapus lagu secara langsung dan menyetujui perubahan tertunda.</p>
+        <div class="field">
+          <label>PIN</label>
+          <input type="password" id="f_pinInput" inputmode="numeric" placeholder="****">
+        </div>
+        <div id="pinError" style="display:none;color:var(--danger);font-size:.78rem;margin-bottom:8px;">PIN salah, coba lagi.</div>
+        <div class="row">
+          <button class="btn btn-outline" id="btnPinCancel">Batal</button>
+          <button class="btn btn-gold" id="btnPinSubmit">Masuk</button>
+        </div>
+      </div>
+    </div>`;
+  const input = document.getElementById('f_pinInput');
+  input.focus();
+  document.getElementById('btnPinCancel').onclick = closeModal;
+  document.getElementById('pinModalOverlay').addEventListener('click',(e)=>{ if(e.target.id==='pinModalOverlay') closeModal(); });
+  function submit(){
+    if(input.value === getAdminPin()){
+      isAdmin = true;
+      updateAdminButton();
+      closeModal();
+      renderSongList();
+      renderPending();
+      showToast('Masuk sebagai Admin');
+    } else {
+      document.getElementById('pinError').style.display = '';
+    }
+  }
+  document.getElementById('btnPinSubmit').onclick = submit;
+  input.addEventListener('keydown', (e)=>{ if(e.key==='Enter') submit(); });
+}
+function changeAdminPin(){
+  const root = document.getElementById('modalRoot');
+  root.innerHTML = `
+    <div class="modal-overlay" id="changePinOverlay">
+      <div class="modal" style="max-width:360px;">
+        <h3>Ubah PIN Admin</h3>
+        <div class="field">
+          <label>PIN Baru</label>
+          <input type="password" id="f_newPin" inputmode="numeric" placeholder="Minimal 4 digit">
+        </div>
+        <div class="row">
+          <button class="btn btn-outline" id="btnCancelChangePin">Batal</button>
+          <button class="btn btn-gold" id="btnSaveChangePin">Simpan</button>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('btnCancelChangePin').onclick = closeModal;
+  document.getElementById('changePinOverlay').addEventListener('click',(e)=>{ if(e.target.id==='changePinOverlay') closeModal(); });
+  document.getElementById('btnSaveChangePin').onclick = ()=>{
+    const val = document.getElementById('f_newPin').value.trim();
+    if(val.length < 4){ showToast('PIN minimal 4 digit'); return; }
+    setAdminPin(val);
+    closeModal();
+    showToast('PIN admin diperbarui');
+  };
+}
+document.getElementById('btnAdminToggle').addEventListener('click', ()=>{
+  if(isAdmin){
+    isAdmin = false;
+    updateAdminButton();
+    renderSongList();
+    renderPending();
+    showToast('Keluar dari mode Admin');
+  } else {
+    promptAdminPin();
+  }
+});
+function queuePendingChange(type, song, proposed){
+  const pending = loadPending();
+  pending.unshift({
+    id: crypto.randomUUID(),
+    type, // 'edit' | 'delete'
+    targetId: song.id,
+    before: {title:song.title, category:song.category, tempo:song.tempo, syukurType:song.syukurType, lyrics:song.lyrics, audioUrl:song.audioUrl, videoUrl:song.videoUrl, notes:song.notes},
+    proposed: proposed || null,
+    requestedAt: Date.now()
+  });
+  savePending(pending);
+}
+function renderPending(){
+  const pending = loadPending();
+  const explainEl = document.getElementById('pendingModeExplain');
+  explainEl.innerHTML = isAdmin
+    ? 'Anda masuk sebagai Admin — bisa menyetujui atau menolak perubahan di bawah ini. <button class="btn btn-outline btn-sm" style="margin-left:6px;" onclick="changeAdminPin()">Ubah PIN Admin</button>'
+    : 'Perubahan Edit dari pengguna biasa masuk ke sini dulu dan menunggu persetujuan Admin (masukkan PIN lewat tombol Admin di pojok kanan atas) sebelum benar-benar diterapkan. Menghapus lagu hanya bisa dilakukan oleh Admin, untuk menjaga kelengkapan database.';
+  const container = document.getElementById('pendingContainer');
+  if(pending.length === 0){
+    container.innerHTML = '<div class="empty-state">Tidak ada perubahan tertunda.</div>';
+    updatePendingBadge();
+    return;
+  }
+  container.innerHTML = pending.map(p=>{
+    const label = p.type === 'delete' ? 'Usulan HAPUS' : 'Usulan EDIT';
+    const badgeColor = p.type === 'delete' ? 'var(--danger)' : 'var(--gold)';
+    let diffHtml = '';
+    if(p.type === 'edit' && p.proposed){
+      const fields = [
+        ['title','Judul'], ['category','Kategori'], ['tempo','Tempo'], ['syukurType','Jenis Syair'],
+        ['lyrics','Lirik'], ['audioUrl','Link Audio'], ['videoUrl','Link Video'], ['notes','Catatan']
+      ];
+      fields.forEach(([key,label2])=>{
+        const beforeVal = p.before[key] || '-';
+        const afterVal = p.proposed[key] || '-';
+        if(String(beforeVal) !== String(afterVal)){
+          diffHtml += `<div class="diff-box">
+            <div class="diff-label">${label2}</div>
+            <div class="diff-old">${escapeHtml(String(beforeVal))}</div>
+            <div class="diff-new">&darr; ${escapeHtml(String(afterVal))}</div>
+          </div>`;
+        }
+      });
+      if(!diffHtml) diffHtml = '<div class="song-meta">(tidak ada perubahan isi)</div>';
+    } else if(p.type === 'delete'){
+      diffHtml = `<div class="diff-box">
+        <div class="diff-label">Data lagu yang akan dihapus</div>
+        <div class="song-meta">Kategori: ${escapeHtml(p.before.category||'-')} &middot; Tempo: ${escapeHtml(p.before.tempo||'-')}</div>
+        ${p.before.lyrics ? `<pre style="white-space:pre-wrap;font-size:.78rem;margin-top:6px;">${escapeHtml(p.before.lyrics)}</pre>` : ''}
+      </div>`;
+    }
+    return `
+      <div class="history-item">
+        <span class="badge" style="background:${badgeColor};margin-bottom:6px;">${label}</span>
+        <h4>${escapeHtml(p.before.title)}</h4>
+        ${diffHtml}
+        <div class="meta">Diajukan ${new Date(p.requestedAt).toLocaleString('id-ID')}</div>
+        <div class="row" style="margin-top:8px;">
+          <button class="btn btn-gold btn-sm" ${isAdmin?'':'disabled'} onclick="approvePending('${p.id}')">&#10003; Setujui</button>
+          <button class="btn btn-danger btn-sm" ${isAdmin?'':'disabled'} onclick="rejectPending('${p.id}')">&#10007; Tolak</button>
+        </div>
+      </div>`;
+  }).join('');
+  updatePendingBadge();
+}
+function approvePending(id){
+  if(!isAdmin) return;
+  const pending = loadPending();
+  const p = pending.find(x=>x.id===id);
+  if(!p) return;
+  const song = songs.find(s=>s.id===p.targetId);
+  if(song){
+    if(p.type === 'delete'){
+      songs = songs.filter(s=>s.id !== p.targetId);
+    } else if(p.type === 'edit' && p.proposed){
+      Object.assign(song, p.proposed);
+    }
+    saveSongs();
+    renderSongList();
+  }
+  savePending(pending.filter(x=>x.id!==id));
+  renderPending();
+  showToast('Perubahan disetujui');
+}
+function rejectPending(id){
+  if(!isAdmin) return;
+  const pending = loadPending().filter(x=>x.id!==id);
+  savePending(pending);
+  renderPending();
+  showToast('Perubahan ditolak');
+}
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+let toastTimer;
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+/* ============================================================
+   TABS
+   ============================================================ */
+document.querySelectorAll('nav.tabs button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    ['db','setlist','pending','history','io'].forEach(id=>{
+      document.getElementById('tab-'+id).style.display = (id===btn.dataset.tab) ? '' : 'none';
+    });
+    if(btn.dataset.tab === 'setlist') renderSetlistStage();
+    if(btn.dataset.tab === 'history') renderHistory();
+    if(btn.dataset.tab === 'pending') renderPending();
+  });
+});
+
+/* ============================================================
+   DATABASE TAB — LIST / SEARCH / FILTER
+   ============================================================ */
+function populateCategoryFilter(){
+  const sel = document.getElementById('filterCategory');
+  sel.innerHTML = '<option value="">Semua kategori</option>' +
+    CATEGORIES.map(c=>`<option value="${c.id}">${c.label}</option>`).join('');
+}
+
+function renderSongList(){
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  const catFilter = document.getElementById('filterCategory').value;
+  const tempoFilter = document.getElementById('filterTempo').value;
+
+  let filtered = songs.filter(s=>{
+    if(q && !s.title.toLowerCase().includes(q) && !(s.lyrics||'').toLowerCase().includes(q) && !(s.tema||'').toLowerCase().includes(q)) return false;
+    if(catFilter && s.category !== catFilter) return false;
+    if(tempoFilter && s.tempo !== tempoFilter) return false;
+    return true;
+  });
+
+  document.getElementById('songCount').textContent = filtered.length;
+
+  const container = document.getElementById('songListContainer');
+  if(filtered.length === 0){
+    container.innerHTML = '<div class="empty-state">Tidak ada lagu yang cocok. Coba ubah kata kunci atau filter.</div>';
+    return;
+  }
+
+  let html = '';
+  const pendingBySong = {};
+  loadPending().forEach(p=>{ pendingBySong[p.targetId] = (pendingBySong[p.targetId]||0) + 1; });
+  CATEGORIES.forEach(cat=>{
+    const group = filtered.filter(s=>s.category===cat.id);
+    if(group.length===0) return;
+    html += `<div style="margin-bottom:6px;"><span class="badge" style="background:${cat.color}">${cat.label}</span></div>`;
+    group.forEach(s=>{
+      const metaParts = [];
+      if(s.tempo) metaParts.push('Tempo: '+s.tempo);
+      if(s.syukurType) metaParts.push(s.syukurType==='perbuatan_syukur' ? 'Perbuatan Tuhan + Syukur' : 'Perbuatan Tuhan');
+      if(s.key) metaParts.push('Key: '+escapeHtml(s.key));
+      if(s.pw) metaParts.push(escapeHtml(s.pw));
+      if(s.tema) metaParts.push('Tema: '+escapeHtml(s.tema));
+      const linkBtns = [];
+      if(s.lyrics && s.lyrics.trim()) linkBtns.push(`<button class="btn btn-outline btn-sm" onclick="viewLyrics('${s.id}')">&#128220; Lirik</button>`);
+      if(s.audioUrl && s.audioUrl.trim()) linkBtns.push(`<a class="btn btn-outline btn-sm" href="${escapeHtml(normalizeUrl(s.audioUrl))}" target="_blank" rel="noopener">&#127925; Audio</a>`);
+      if(s.videoUrl && s.videoUrl.trim()) linkBtns.push(`<a class="btn btn-outline btn-sm" href="${escapeHtml(normalizeUrl(s.videoUrl))}" target="_blank" rel="noopener">&#9654; Video</a>`);
+      if(!(s.lyrics && s.lyrics.trim())) linkBtns.push(`<a class="btn btn-outline btn-sm" href="https://www.google.com/search?q=${encodeURIComponent('lirik '+s.title)}" target="_blank" rel="noopener">&#128269; Cari Lirik</a>`);
+      const hasPending = !!pendingBySong[s.id];
+      html += `
+        <div class="song-item">
+          <div>
+            <div class="song-title">${escapeHtml(s.title)} ${hasPending ? '<span class="badge" style="background:var(--gold);color:#2a2200;">Menunggu Persetujuan</span>' : ''}</div>
+            ${metaParts.length ? `<div class="song-meta">${metaParts.join(' &middot; ')}</div>` : ''}
+            ${linkBtns.length ? `<div class="row" style="margin-top:6px;gap:6px;">${linkBtns.join('')}</div>` : ''}
+          </div>
+          <div class="song-actions">
+            <button class="btn btn-outline btn-sm" onclick="openSongModal('${s.id}')">Edit</button>
+            ${isAdmin ? `<button class="btn btn-danger btn-sm" onclick="deleteSong('${s.id}')">Hapus</button>` : ''}
+          </div>
+        </div>`;
+    });
+  });
+  container.innerHTML = html;
+}
+
+function escapeHtml(str){
+  return (str||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+function normalizeUrl(url){
+  url = (url||'').trim();
+  if(!url) return '#';
+  if(!/^https?:\/\//i.test(url)) return 'https://' + url;
+  return url;
+}
+function viewLyrics(id){
+  const s = songs.find(x=>x.id===id);
+  if(!s) return;
+  const root = document.getElementById('modalRoot');
+  const linkRows = [];
+  if(s.audioUrl) linkRows.push(`<a href="${escapeHtml(normalizeUrl(s.audioUrl))}" target="_blank" rel="noopener">&#127925; Buka Audio</a>`);
+  if(s.videoUrl) linkRows.push(`<a href="${escapeHtml(normalizeUrl(s.videoUrl))}" target="_blank" rel="noopener">&#9654; Buka Video</a>`);
+  root.innerHTML = `
+    <div class="modal-overlay" id="lyricsModalOverlay">
+      <div class="modal">
+        <h3>${escapeHtml(s.title)}</h3>
+        ${linkRows.length ? `<div class="row" style="margin-bottom:12px;">${linkRows.join('')}</div>` : ''}
+        <div class="field">
+          <label>Lirik</label>
+          <textarea readonly style="width:100%;min-height:280px;white-space:pre-wrap;">${escapeHtml(s.lyrics||'(belum ada lirik)')}</textarea>
+        </div>
+        <div class="row">
+          <button class="btn btn-outline" id="btnCloseLyrics">Tutup</button>
+          <button class="btn btn-gold" id="btnEditFromLyrics">Edit Lagu</button>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('btnCloseLyrics').onclick = closeModal;
+  document.getElementById('lyricsModalOverlay').addEventListener('click',(e)=>{ if(e.target.id==='lyricsModalOverlay') closeModal(); });
+  document.getElementById('btnEditFromLyrics').onclick = ()=>openSongModal(id);
+}
+
+document.getElementById('searchInput').addEventListener('input', renderSongList);
+document.getElementById('filterCategory').addEventListener('change', renderSongList);
+document.getElementById('filterTempo').addEventListener('change', renderSongList);
+
+/* ============================================================
+   ADD / EDIT SONG MODAL
+   ============================================================ */
+function openSongModal(id){
+  const song = id ? songs.find(s=>s.id===id) : null;
+  const isEdit = !!song;
+  const root = document.getElementById('modalRoot');
+  root.innerHTML = `
+    <div class="modal-overlay" id="songModalOverlay">
+      <div class="modal">
+        <h3>${isEdit ? 'Edit Lagu' : 'Tambah Lagu Baru'}</h3>
+        <div class="field">
+          <label>Judul Lagu *</label>
+          <input type="text" id="f_title" value="${isEdit ? escapeHtml(song.title) : ''}" placeholder="mis. Bapa Engkau Sungguh Baik" list="titleSuggestions" autocomplete="off">
+          <datalist id="titleSuggestions">
+            ${[...new Set(songs.map(s=>s.title))].sort((a,b)=>a.localeCompare(b)).map(t=>`<option value="${escapeHtml(t)}">`).join('')}
+          </datalist>
+          <div id="f_titleWarning" style="display:none;margin-top:5px;font-size:.75rem;color:#a15c00;background:#fff6e5;border:1px solid #f0d999;border-radius:6px;padding:5px 8px;">
+            &#9888; Judul ini sudah ada di database.
+          </div>
+        </div>
+        <div class="field">
+          <label>Kategori *</label>
+          <select id="f_category">
+            ${CATEGORIES.map(c=>`<option value="${c.id}" ${isEdit && song.category===c.id ? 'selected':''}>${c.label}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field">
+          <label>Tempo (opsional)</label>
+          <select id="f_tempo">
+            <option value="">- tidak ditentukan -</option>
+            <option value="Lambat" ${isEdit && song.tempo==='Lambat' ? 'selected':''}>Lambat</option>
+            <option value="Sedang" ${isEdit && song.tempo==='Sedang' ? 'selected':''}>Sedang</option>
+            <option value="Cepat" ${isEdit && song.tempo==='Cepat' ? 'selected':''}>Cepat</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Jenis Syair (khusus kategori Syukur, opsional)</label>
+          <select id="f_syukurType">
+            <option value="">- tidak ditentukan -</option>
+            <option value="perbuatan_syukur" ${isEdit && song.syukurType==='perbuatan_syukur' ? 'selected':''}>Perbuatan Tuhan + Ucapan Syukur</option>
+            <option value="perbuatan" ${isEdit && song.syukurType==='perbuatan' ? 'selected':''}>Perbuatan Tuhan</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Lirik (opsional)</label>
+          <textarea id="f_lyrics" style="min-height:160px;" placeholder="Tempel lirik lagu di sini (dari buku/lembar lagu milik komunitas Anda sendiri)">${isEdit ? escapeHtml(song.lyrics||'') : ''}</textarea>
+        </div>
+        <div class="field">
+          <label>Link Audio / MP3 (opsional)</label>
+          <input type="text" id="f_audioUrl" value="${isEdit ? escapeHtml(song.audioUrl||'') : ''}" placeholder="mis. link Google Drive / WA / SoundCloud">
+        </div>
+        <div class="field">
+          <label>Link Video / YouTube (opsional)</label>
+          <input type="text" id="f_videoUrl" value="${isEdit ? escapeHtml(song.videoUrl||'') : ''}" placeholder="mis. https://youtube.com/...">
+        </div>
+        <div class="field">
+          <label>Catatan (opsional)</label>
+          <input type="text" id="f_notes" value="${isEdit ? escapeHtml(song.notes||'') : ''}" placeholder="mis. cocok untuk pembukaan / versi Taize">
+        </div>
+        <div class="row" style="margin-top:10px;">
+          <button class="btn btn-outline" id="btnCancelModal">Batal</button>
+          <button class="btn btn-gold" id="btnSaveModal">${isEdit ? 'Simpan Perubahan' : 'Tambah Lagu'}</button>
+        </div>
+      </div>
+    </div>`;
+
+  document.getElementById('btnCancelModal').onclick = closeModal;
+  document.getElementById('songModalOverlay').addEventListener('click', (e)=>{
+    if(e.target.id === 'songModalOverlay') closeModal();
+  });
+
+  const titleInputEl = document.getElementById('f_title');
+  const titleWarningEl = document.getElementById('f_titleWarning');
+  function checkDuplicateTitle(){
+    const val = titleInputEl.value.trim().toLowerCase();
+    const dup = val && songs.some(s => s.title.trim().toLowerCase() === val && (!isEdit || s.id !== song.id));
+    titleWarningEl.style.display = dup ? '' : 'none';
+  }
+  titleInputEl.addEventListener('input', checkDuplicateTitle);
+  checkDuplicateTitle();
+
+  document.getElementById('btnSaveModal').onclick = ()=>{
+    const title = document.getElementById('f_title').value.trim();
+    if(!title){ showToast('Judul lagu wajib diisi'); return; }
+    const category = document.getElementById('f_category').value;
+    const tempo = document.getElementById('f_tempo').value || null;
+    const syukurType = document.getElementById('f_syukurType').value || null;
+    const lyrics = document.getElementById('f_lyrics').value;
+    const audioUrl = document.getElementById('f_audioUrl').value.trim();
+    const videoUrl = document.getElementById('f_videoUrl').value.trim();
+    const notes = document.getElementById('f_notes').value.trim();
+
+    const proposed = {title, category, tempo, syukurType, lyrics, audioUrl, videoUrl, notes};
+
+    if(isEdit && !isAdmin){
+      queuePendingChange('edit', song, proposed);
+      closeModal();
+      showToast('Perubahan diajukan, menunggu persetujuan Admin');
+      return;
+    }
+
+    if(isEdit){
+      Object.assign(song, proposed);
+    } else {
+      songs.push({id: crypto.randomUUID(), ...proposed, createdAt: Date.now()});
+    }
+    saveSongs();
+    renderSongList();
+    closeModal();
+    showToast(isEdit ? 'Lagu diperbarui' : 'Lagu ditambahkan');
+  };
+}
+function closeModal(){ document.getElementById('modalRoot').innerHTML = ''; }
+function deleteSong(id){
+  const song = songs.find(s=>s.id===id);
+  if(!song) return;
+
+  if(!isAdmin){
+    showToast('Hanya Admin yang bisa menghapus lagu');
+    return;
+  }
+
+  if(!confirm(`Hapus lagu "${song.title}"?`)) return;
+  songs = songs.filter(s=>s.id!==id);
+  saveSongs();
+  renderSongList();
+  showToast('Lagu dihapus');
+}
+document.getElementById('btnAddSong').addEventListener('click', ()=>openSongModal(null));
+
+/* ============================================================
+   SETLIST BUILDER (Alur Mazmur 100)
+   ============================================================ */
+const FLOW = [...STAGE_ORDER, ...EXTRA_CATS]; // 4 wajib + 3 opsional, in order
+
+function resetSetlistDraft(){
+  setlistDraft = {};
+  FLOW.forEach(c=>setlistDraft[c.id]=[]);
+  currentStageIndex = 0;
+}
+resetSetlistDraft();
+
+function renderStageFlowIndicator(){
+  const el = document.getElementById('stageFlow');
+  el.innerHTML = FLOW.map((c,i)=>{
+    let cls = '';
+    if(i === currentStageIndex) cls='active';
+    else if(setlistDraft[c.id] && setlistDraft[c.id].length>0) cls='done';
+    return `<div class="stage-dot ${cls}">${i+1}. ${c.label}</div>`;
+  }).join('<span class="arrow">&rarr;</span>');
+}
+
+function renderSetlistStage(){
+  renderStageFlowIndicator();
+  const area = document.getElementById('setlistStageArea');
+
+  if(currentStageIndex >= FLOW.length){
+    renderSetlistFinal();
+    return;
+  }
+
+  const cat = FLOW[currentStageIndex];
+  const isRequired = !!cat.stage;
+  const candidates = songs.filter(s=>s.category===cat.id);
+  const selectedIds = setlistDraft[cat.id];
+
+  let listHtml = '';
+  if(candidates.length === 0){
+    listHtml = `<div class="empty-state">Belum ada lagu kategori "${cat.label}". Tambahkan dulu di tab Database Lagu.</div>`;
+  } else {
+    listHtml = candidates.map(s=>{
+      const sel = selectedIds.includes(s.id);
+      const metaParts = [];
+      if(s.tempo) metaParts.push(s.tempo);
+      return `<div class="picker-item ${sel?'selected':''}" onclick="toggleSetlistSong('${cat.id}','${s.id}')">
+        <span>${escapeHtml(s.title)} ${metaParts.length ? `<span class="song-meta">(${metaParts.join(', ')})</span>`:''}</span>
+        <span class="chk">${sel?'&#10003;':''}</span>
+      </div>`;
+    }).join('');
+  }
+
+  area.innerHTML = `
+    <h3 style="margin:6px 0 2px;color:var(--navy);">${currentStageIndex+1}. ${cat.label}${isRequired?' *':' (opsional)'}</h3>
+    <p class="helper-text" style="margin-top:0;">${cat.desc}</p>
+    ${listHtml}
+    <div class="row" style="margin-top:14px;">
+      ${currentStageIndex>0 ? '<button class="btn btn-outline" onclick="setlistPrev()">&larr; Sebelumnya</button>' : '<span></span>'}
+      ${!isRequired ? '<button class="btn btn-outline" onclick="setlistSkip()">Lewati</button>' : ''}
+      <button class="btn btn-gold" onclick="setlistNext()">${currentStageIndex===FLOW.length-1 ? 'Selesai & Lihat Setlist' : 'Lanjut &rarr;'}</button>
+    </div>
+  `;
+}
+
+function toggleSetlistSong(catId, songId){
+  const arr = setlistDraft[catId];
+  const idx = arr.indexOf(songId);
+  if(idx>=0) arr.splice(idx,1); else arr.push(songId);
+  renderSetlistStage();
+}
+function setlistNext(){
+  const cat = FLOW[currentStageIndex];
+  if(cat.stage && setlistDraft[cat.id].length===0){
+    showToast('Pilih minimal 1 lagu untuk tahap wajib ini');
+    return;
+  }
+  currentStageIndex++;
+  renderSetlistStage();
+}
+function setlistSkip(){
+  currentStageIndex++;
+  renderSetlistStage();
+}
+function setlistPrev(){
+  currentStageIndex--;
+  renderSetlistStage();
+}
+
+function buildSetlistText(title){
+  const lines = [];
+  lines.push(`*${title || 'Setlist Persekutuan Doa'}*`);
+  lines.push(`_Disusun mengikuti alur Mazmur 100 (Handout SPBI)_`);
+  lines.push('');
+  FLOW.forEach(cat=>{
+    const ids = setlistDraft[cat.id];
+    if(!ids || ids.length===0) return;
+    lines.push(`*${cat.label}*`);
+    ids.forEach((id,i)=>{
+      const s = songs.find(x=>x.id===id);
+      if(s) lines.push(`${i+1}. ${s.title}${s.tempo ? ' ('+s.tempo+')' : ''}`);
+    });
+    lines.push('');
+  });
+  return lines.join('\n').trim();
+}
+
+function buildSetlistSongList(){
+  // flattened ordered list of {cat, song} across the whole setlist
+  const list = [];
+  FLOW.forEach(cat=>{
+    (setlistDraft[cat.id]||[]).forEach(id=>{
+      const s = songs.find(x=>x.id===id);
+      if(s) list.push({cat, song:s});
+    });
+  });
+  return list;
+}
+
+function renderSetlistFinal(){
+  const area = document.getElementById('setlistStageArea');
+  const defaultTitle = 'Setlist PD - ' + new Date().toLocaleDateString('id-ID',{weekday:'long', year:'numeric', month:'long', day:'numeric'});
+  const list = buildSetlistSongList();
+  const missingLyricsCount = list.filter(x=>!(x.song.lyrics && x.song.lyrics.trim())).length;
+  area.innerHTML = `
+    <div class="field">
+      <label>Judul Setlist</label>
+      <input type="text" id="setlistTitleInput" value="${escapeHtml(defaultTitle)}">
+    </div>
+    <div class="field">
+      <label>Preview (format WhatsApp)</label>
+      <textarea id="waPreview" readonly></textarea>
+    </div>
+    <div class="row">
+      <button class="btn btn-outline" onclick="setlistBack()">&larr; Ubah Pilihan</button>
+      <button class="btn btn-primary" id="btnCopyWa">Salin Teks</button>
+      <button class="btn btn-gold" id="btnSaveSetlist">Simpan ke Riwayat</button>
+    </div>
+    <div class="row" style="margin-top:8px;">
+      <button class="btn btn-outline" id="btnExportSetlistCsv">Export Setlist ke CSV</button>
+      <button class="btn btn-danger" onclick="setlistStartOver()">Mulai Ulang</button>
+    </div>
+    <hr style="margin:18px 0;border:none;border-top:1px solid var(--border);">
+    <h3 class="section-title" style="margin-bottom:6px;">Susunan Judul &amp; Lirik Lengkap</h3>
+    <p class="helper-text">${missingLyricsCount>0 ? `&#9888; ${missingLyricsCount} lagu belum ada liriknya di database &mdash; lengkapi dulu lewat Edit Lagu supaya muncul di lembar cetak.` : 'Semua lagu pada setlist ini sudah punya lirik tersimpan.'}</p>
+    <div id="lyricsFullPreview"></div>
+    <div class="row" style="margin-top:8px;">
+      <button class="btn btn-gold" id="btnPrintSetlist">&#128424; Cetak / Simpan sebagai PDF</button>
+    </div>
+  `;
+  const titleInput = document.getElementById('setlistTitleInput');
+  const preview = document.getElementById('waPreview');
+  function refreshPreview(){ preview.value = buildSetlistText(titleInput.value); }
+  refreshPreview();
+  titleInput.addEventListener('input', refreshPreview);
+
+  // full lyrics preview (on-screen, so it can be reviewed / copied before printing)
+  const lyricsArea = document.getElementById('lyricsFullPreview');
+  lyricsArea.innerHTML = list.map((x,i)=>{
+    const s = x.song;
+    const hasLyrics = s.lyrics && s.lyrics.trim();
+    return `
+      <div class="lyrics-preview-block">
+        <h4>${i+1}. ${escapeHtml(s.title)}</h4>
+        <div class="lp-meta">${escapeHtml(x.cat.label)}${s.tempo ? ' &middot; '+escapeHtml(s.tempo) : ''}</div>
+        ${hasLyrics ? `<pre>${escapeHtml(s.lyrics)}</pre>` : `<em class="helper-text">(lirik belum diisi di database)</em>`}
+      </div>`;
+  }).join('') || '<div class="empty-state">Belum ada lagu di setlist.</div>';
+
+  document.getElementById('btnCopyWa').onclick = ()=>{
+    preview.select();
+    document.execCommand('copy');
+    showToast('Teks setlist disalin');
+  };
+  document.getElementById('btnSaveSetlist').onclick = ()=>{
+    const hist = loadHistory();
+    hist.unshift({
+      id: crypto.randomUUID(),
+      title: titleInput.value,
+      createdAt: Date.now(),
+      draft: JSON.parse(JSON.stringify(setlistDraft)),
+      text: buildSetlistText(titleInput.value)
+    });
+    saveHistory(hist);
+    showToast('Setlist disimpan ke riwayat');
+  };
+  document.getElementById('btnExportSetlistCsv').onclick = ()=>{
+    let rows = [['tahap','judul','tempo']];
+    FLOW.forEach(cat=>{
+      (setlistDraft[cat.id]||[]).forEach(id=>{
+        const s = songs.find(x=>x.id===id);
+        if(s) rows.push([cat.label, s.title, s.tempo||'']);
+      });
+    });
+    downloadCsv(rows, (titleInput.value||'setlist').replace(/[^a-z0-9]+/gi,'_') + '.csv');
+  };
+  document.getElementById('btnPrintSetlist').onclick = ()=>{
+    printSetlist(titleInput.value, list);
+  };
+}
+
+function printSetlist(title, list){
+  const printArea = document.getElementById('printSetlistArea');
+  const dateStr = new Date().toLocaleDateString('id-ID',{weekday:'long', year:'numeric', month:'long', day:'numeric'});
+  printArea.innerHTML = `
+    <h1>${escapeHtml(title || 'Setlist Persekutuan Doa')}</h1>
+    <div class="print-sub">${dateStr} &middot; Alur Mazmur 100 (Handout SPBI) &middot; PDPKK</div>
+    ${list.map((x,i)=>{
+      const s = x.song;
+      const hasLyrics = s.lyrics && s.lyrics.trim();
+      return `
+        <div class="print-song">
+          <h3>${i+1}. ${escapeHtml(s.title)}</h3>
+          <div class="print-meta">${escapeHtml(x.cat.label)}${s.tempo ? ' &middot; '+escapeHtml(s.tempo) : ''}</div>
+          ${hasLyrics ? `<pre>${escapeHtml(s.lyrics)}</pre>` : `<em>(lirik belum diisi)</em>`}
+        </div>`;
+    }).join('')}
+  `;
+  window.print();
+}
+
+function setlistBack(){
+  currentStageIndex = FLOW.length - 1;
+  renderSetlistStage();
+}
+function setlistStartOver(){
+  resetSetlistDraft();
+  renderSetlistStage();
+}
+
+/* ============================================================
+   HISTORY TAB
+   ============================================================ */
+function renderHistory(){
+  const hist = loadHistory();
+  const container = document.getElementById('historyContainer');
+  if(hist.length===0){
+    container.innerHTML = '<div class="empty-state">Belum ada setlist tersimpan.</div>';
+    return;
+  }
+  container.innerHTML = hist.map(h=>`
+    <div class="history-item">
+      <h4>${escapeHtml(h.title)}</h4>
+      <div class="meta">${new Date(h.createdAt).toLocaleString('id-ID')}</div>
+      <div class="row" style="margin-top:8px;">
+        <button class="btn btn-outline btn-sm" onclick="viewHistoryItem('${h.id}')">Lihat / Salin</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteHistoryItem('${h.id}')">Hapus</button>
+      </div>
+    </div>
+  `).join('');
+}
+function viewHistoryItem(id){
+  const hist = loadHistory();
+  const item = hist.find(h=>h.id===id);
+  if(!item) return;
+  const root = document.getElementById('modalRoot');
+  root.innerHTML = `
+    <div class="modal-overlay" id="histModalOverlay">
+      <div class="modal">
+        <h3>${escapeHtml(item.title)}</h3>
+        <textarea id="histText" readonly style="width:100%;min-height:260px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.82rem;">${escapeHtml(item.text)}</textarea>
+        <div class="row" style="margin-top:10px;">
+          <button class="btn btn-outline" id="btnCloseHist">Tutup</button>
+          <button class="btn btn-gold" id="btnCopyHist">Salin Teks</button>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('btnCloseHist').onclick = closeModal;
+  document.getElementById('histModalOverlay').addEventListener('click',(e)=>{ if(e.target.id==='histModalOverlay') closeModal(); });
+  document.getElementById('btnCopyHist').onclick = ()=>{
+    const ta = document.getElementById('histText');
+    ta.select();
+    document.execCommand('copy');
+    showToast('Teks disalin');
+  };
+}
+function deleteHistoryItem(id){
+  if(!confirm('Hapus setlist ini dari riwayat?')) return;
+  let hist = loadHistory();
+  hist = hist.filter(h=>h.id!==id);
+  saveHistory(hist);
+  renderHistory();
+}
+
+/* ============================================================
+   CSV HELPERS
+   ============================================================ */
+function csvEscape(val){
+  val = String(val ?? '');
+  if(/[",\n]/.test(val)) return '"' + val.replace(/"/g,'""') + '"';
+  return val;
+}
+// Coba pakai kapabilitas "downloads" bila berjalan di dalam artifact viewer;
+// kalau tidak tersedia (mis. file dibuka langsung di browser), pakai cara link biasa.
+let _downloadsCap = null;
+let _downloadsCapChecked = false;
+async function getDownloadsCap(){
+  if(_downloadsCapChecked) return _downloadsCap;
+  _downloadsCapChecked = true;
+  try{
+    if(window.claude && typeof window.claude.use === 'function'){
+      _downloadsCap = await window.claude.use('downloads');
+    }
+  }catch(e){ _downloadsCap = null; }
+  return _downloadsCap;
+}
+function downloadViaAnchor(blob, filename){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+async function saveFile(filename, blob){
+  const cap = await getDownloadsCap();
+  if(cap){
+    try{
+      const buf = await blob.arrayBuffer();
+      await cap.save({filename, data: buf});
+      return;
+    }catch(e){
+      console.error('downloads.save gagal, fallback ke link', e);
+    }
+  }
+  downloadViaAnchor(blob, filename);
+}
+function downloadCsv(rows, filename){
+  const csv = rows.map(r=>r.map(csvEscape).join(',')).join('\r\n');
+  const blob = new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8;'});
+  saveFile(filename, blob);
+}
+function parseCsv(text){
+  const rows = [];
+  let row = [], field = '', inQuotes = false;
+  for(let i=0;i<text.length;i++){
+    const c = text[i];
+    if(inQuotes){
+      if(c === '"'){
+        if(text[i+1] === '"'){ field += '"'; i++; }
+        else inQuotes = false;
+      } else field += c;
+    } else {
+      if(c === '"') inQuotes = true;
+      else if(c === ','){ row.push(field); field=''; }
+      else if(c === '\n'){ row.push(field); rows.push(row); row=[]; field=''; }
+      else if(c === '\r'){ /* skip */ }
+      else field += c;
+    }
+  }
+  if(field.length || row.length){ row.push(field); rows.push(row); }
+  return rows.filter(r=>r.length>1 || r[0] !== '');
+}
+
+/* ============================================================
+   IMPORT / EXPORT TAB
+   ============================================================ */
+document.getElementById('btnExportCsv').addEventListener('click', ()=>{
+  const rows = [['judul','kategori','tempo','jenis_syukur','lirik','link_audio','link_video','catatan','key','praise_worship','tema']];
+  songs.forEach(s=>rows.push([s.title, s.category, s.tempo||'', s.syukurType||'', s.lyrics||'', s.audioUrl||'', s.videoUrl||'', s.notes||'', s.key||'', s.pw||'', s.tema||'']));
+  downloadCsv(rows, 'database_lagu_pdpkk.csv');
+  showToast('CSV diunduh');
+});
+document.getElementById('btnExportJson').addEventListener('click', ()=>{
+  const blob = new Blob([JSON.stringify(songs, null, 2)], {type:'application/json'});
+  saveFile('database_lagu_pdpkk_backup.json', blob);
+  showToast('Backup JSON diunduh');
+});
+
+document.getElementById('csvDropArea').addEventListener('click', ()=>document.getElementById('csvFileInput').click());
+document.getElementById('csvFileInput').addEventListener('change', (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev)=>{
+    try{
+      const rows = parseCsv(ev.target.result);
+      if(rows.length < 2){ showToast('File CSV kosong atau format salah'); return; }
+      const header = rows[0].map(h=>h.trim().toLowerCase());
+      const idx = {
+        judul: header.indexOf('judul'),
+        kategori: header.indexOf('kategori'),
+        tempo: header.indexOf('tempo'),
+        jenis_syukur: header.indexOf('jenis_syukur'),
+        lirik: header.indexOf('lirik'),
+        link_audio: header.indexOf('link_audio'),
+        link_video: header.indexOf('link_video'),
+        catatan: header.indexOf('catatan'),
+      };
+      if(idx.judul === -1 || idx.kategori === -1){
+        showToast('Kolom "judul" dan "kategori" wajib ada di CSV');
+        return;
+      }
+      let added = 0;
+      for(let i=1;i<rows.length;i++){
+        const r = rows[i];
+        const title = (r[idx.judul]||'').trim();
+        if(!title) continue;
+        let category = (r[idx.kategori]||'').trim().toLowerCase();
+        if(!CAT_MAP[category]) category = 'pujian';
+        songs.push({
+          id: crypto.randomUUID(),
+          title,
+          category,
+          tempo: idx.tempo>-1 ? (r[idx.tempo]||'').trim() || null : null,
+          syukurType: idx.jenis_syukur>-1 ? (r[idx.jenis_syukur]||'').trim() || null : null,
+          lyrics: idx.lirik>-1 ? (r[idx.lirik]||'') : '',
+          audioUrl: idx.link_audio>-1 ? (r[idx.link_audio]||'').trim() : '',
+          videoUrl: idx.link_video>-1 ? (r[idx.link_video]||'').trim() : '',
+          notes: idx.catatan>-1 ? (r[idx.catatan]||'') : '',
+          createdAt: Date.now()
+        });
+        added++;
+      }
+      saveSongs();
+      renderSongList();
+      populateCategoryFilter();
+      showToast(`${added} lagu berhasil diimpor`);
+    }catch(err){
+      showToast('Gagal membaca file CSV');
+      console.error(err);
+    }
+    e.target.value = '';
+  };
+  reader.readAsText(file, 'UTF-8');
+});
+
+document.getElementById('btnForcePush').addEventListener('click', ()=>{
+  if(!isAdmin){ showToast('Hanya Admin yang bisa melakukan ini'); return; }
+  forcePushLocalToCloud();
+});
+document.getElementById('btnForcePull').addEventListener('click', ()=>{
+  if(!isAdmin){ showToast('Hanya Admin yang bisa melakukan ini'); return; }
+  forcePullCloudToLocal();
+});
+
+document.getElementById('btnResetDb').addEventListener('click', ()=>{
+  if(!confirm('Yakin ingin mereset semua data lagu ke data awal dari handout? Perubahan Anda akan hilang.')) return;
+  songs = seedData();
+  songs = songs.concat(gbiSongObjects(songs));
+  saveSongs();
+  renderSongList();
+  showToast('Database direset ke data awal');
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+loadSongs();
+populateCategoryFilter();
+renderSongList();
+updateAdminButton();
+updatePendingBadge();
+initCloudSync();
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('service-worker.js').catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
