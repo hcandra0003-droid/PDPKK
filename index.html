@@ -271,7 +271,7 @@
   <nav class="tabs">
     <button data-tab="db" class="active">Database Lagu</button>
     <button data-tab="setlist">Susun Setlist</button>
-    <button data-tab="pending">Perubahan Tertunda <span class="counter-pill" id="pendingCountBadge" style="display:none;">0</span></button>
+    <button data-tab="pending" id="navPendingBtn" style="display:none;">UPDATE <span class="counter-pill" id="pendingCountBadge" style="display:none;">0</span></button>
     <button data-tab="history">Riwayat Setlist</button>
     <button data-tab="io">Import / Export</button>
   </nav>
@@ -325,7 +325,7 @@
   <!-- ===================== TAB: PENDING CHANGES ===================== -->
   <section id="tab-pending" style="display:none;">
     <div class="card">
-      <h2 class="section-title">Perubahan Tertunda</h2>
+      <h2 class="section-title">UPDATE</h2>
       <p class="helper-text" id="pendingModeExplain"></p>
       <div id="pendingContainer"></div>
     </div>
@@ -806,6 +806,41 @@ function updatePendingBadge(){
   if(n>0){ badge.textContent = n; badge.style.display = ''; }
   else { badge.style.display = 'none'; }
 }
+// Menu "UPDATE" (dulu "Perubahan Tertunda") hanya boleh dilihat Admin,
+// supaya pengguna biasa tidak perlu/bisa melihat antrean persetujuan.
+function updatePendingTabVisibility(){
+  const btn = document.getElementById('navPendingBtn');
+  if(!btn) return;
+  btn.style.display = isAdmin ? '' : 'none';
+  if(!isAdmin && btn.classList.contains('active')){
+    const dbBtn = document.querySelector('nav.tabs button[data-tab="db"]');
+    if(dbBtn) dbBtn.click();
+  }
+}
+// Nomor WA admin yang diberi tahu setiap kali ada usulan EDIT atau
+// penambahan lagu baru oleh pengguna non-admin.
+const ADMIN_WA_LIST = [
+  {name:'Herdianto', phone:'6281517033111'},
+];
+function notifyAdminWA(songTitle, actionLabel){
+  const msg = `Halo Admin, ada ${actionLabel} pada lagu "${songTitle}" di Database Lagu PDPKK. Mohon dicek di menu UPDATE untuk ditinjau. Terima kasih.`;
+  const root = document.getElementById('modalRoot');
+  root.innerHTML = `
+    <div class="modal-overlay" id="waNotifyOverlay">
+      <div class="modal" style="max-width:360px;">
+        <h3>Beri Tahu Admin via WhatsApp</h3>
+        <p class="helper-text">Supaya admin langsung tahu dan segera meninjau, kirim info ini ke salah satu admin lewat WhatsApp (pesan sudah terisi, tinggal tekan Kirim di WhatsApp):</p>
+        <div class="row" style="flex-direction:column;gap:8px;">
+          ${ADMIN_WA_LIST.map(a=>`<a class="btn btn-gold" style="width:100%;text-align:center;" target="_blank" rel="noopener" href="https://wa.me/${a.phone}?text=${encodeURIComponent(msg)}">&#128241; Kirim ke ${a.name}</a>`).join('')}
+        </div>
+        <div class="row" style="margin-top:10px;">
+          <button class="btn btn-outline" id="btnSkipWaNotify" style="width:100%;">Lewati</button>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('btnSkipWaNotify').onclick = closeModal;
+  document.getElementById('waNotifyOverlay').addEventListener('click',(e)=>{ if(e.target.id==='waNotifyOverlay') closeModal(); });
+}
 function updateAdminButton(){
   const btn = document.getElementById('btnAdminToggle');
   if(!btn) return;
@@ -847,6 +882,7 @@ function promptAdminPin(){
     if(input.value === getAdminPin()){
       isAdmin = true;
       updateAdminButton();
+      updatePendingTabVisibility();
       closeModal();
       renderSongList();
       renderPending();
@@ -888,6 +924,7 @@ document.getElementById('btnAdminToggle').addEventListener('click', ()=>{
   if(isAdmin){
     isAdmin = false;
     updateAdminButton();
+    updatePendingTabVisibility();
     renderSongList();
     renderPending();
     showToast('Keluar dari mode Admin');
@@ -1221,9 +1258,11 @@ function openSongModal(id){
       queuePendingChange('edit', song, proposed);
       closeModal();
       showToast('Perubahan diajukan, menunggu persetujuan Admin');
+      notifyAdminWA(title, 'usulan EDIT lagu');
       return;
     }
 
+    const wasAddByNonAdmin = !isEdit && !isAdmin;
     if(isEdit){
       Object.assign(song, proposed);
     } else {
@@ -1233,6 +1272,9 @@ function openSongModal(id){
     renderSongList();
     closeModal();
     showToast(isEdit ? 'Lagu diperbarui' : 'Lagu ditambahkan');
+    if(wasAddByNonAdmin){
+      notifyAdminWA(title, 'penambahan lagu baru');
+    }
   };
 }
 function closeModal(){ document.getElementById('modalRoot').innerHTML = ''; }
@@ -1708,6 +1750,7 @@ loadSongs();
 populateCategoryFilter();
 renderSongList();
 updateAdminButton();
+updatePendingTabVisibility();
 updatePendingBadge();
 initCloudSync();
 
